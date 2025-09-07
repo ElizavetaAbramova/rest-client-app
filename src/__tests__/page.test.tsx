@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithI18n } from './test-utils'
 import Header from '@/widgets/Header'
 import Footer from '@/widgets/Footer'
 
 describe('RootLayout', () => {
   it('renders Header, Footer and children', () => {
-    render(
+    renderWithI18n(
       <>
         <Header />
         <div>Content</div>

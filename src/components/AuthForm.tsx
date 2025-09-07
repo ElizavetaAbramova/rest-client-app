@@ -9,19 +9,26 @@ import { FirebaseError } from 'firebase/app'
 import { auth } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { PASSWORD_RE, mapAuthErr } from '@/constants/auth'
+import { useT } from '@/hooks/useT'
 
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().regex(PASSWORD_RE, 'Min 8, 1 letter, 1 digit, 1 special'),
-})
-type FormData = z.infer<typeof schema>
+type FormData = { email: string; password: string }
 
 export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
+  const { t } = useT()
   const router = useRouter()
   const [passwordHidden, setPasswordHidden] = useState(true)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        email: z.string().email({ message: t('invalid_email') }),
+        password: z.string().regex(PASSWORD_RE, t('password_rules')),
+      }),
+    [t]
+  )
 
   const { register, handleSubmit, formState: { errors, isSubmitting, isValid }, getValues } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -36,8 +43,11 @@ export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
     return () => unsub()
   }, [router])
 
-  const title = useMemo(() => (mode === 'sign-in' ? 'Sign In' : 'Sign Up'), [mode])
-  const btnLabel = useMemo(() => (!isSubmitting ? title : mode === 'sign-in' ? 'Signing in…' : 'Creating account…'), [isSubmitting, mode, title])
+  const title = useMemo(() => (mode === 'sign-in' ? t('sign_in_title') : t('sign_up_title')), [mode, t])
+  const btnLabel = useMemo(
+    () => (!isSubmitting ? title : mode === 'sign-in' ? t('signing_in') : t('creating_account')),
+    [isSubmitting, mode, title, t]
+  )
 
   async function onSubmit(data: FormData) {
     setSubmitError(null)
@@ -62,12 +72,12 @@ export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
     setInfoMessage(null)
     const email = getValues('email')
     if (!email) {
-      setSubmitError('Enter your email to reset password.')
+      setSubmitError(t('enter_email_reset', 'Enter your email to reset password.'))
       return
     }
     try {
       await sendPasswordResetEmail(auth, email)
-      setInfoMessage('Password reset link sent to your email.')
+      setInfoMessage(t('reset_link_sent', 'Password reset link sent to your email.'))
     } catch (err: unknown) {
       let code = 'auth/error'
       if (err instanceof FirebaseError) code = err.code
@@ -83,12 +93,12 @@ export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
       <h1 className="text-xl font-semibold mb-4 text-center">{title}</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3" aria-describedby="form-status">
         <div>
-          <label htmlFor="email" className="sr-only">Email</label>
+          <label htmlFor="email" className="sr-only">{t('email')}</label>
           <input
             id="email"
             {...register('email')}
             type="email"
-            placeholder="Email"
+            placeholder={t('email_placeholder')}
             autoComplete="email"
             className="input input-bordered w-full"
             aria-invalid={!!errors.email}
@@ -97,13 +107,13 @@ export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
           {errors.email && <p id="email-error" className="text-sm text-red-400 mt-1">{errors.email.message}</p>}
         </div>
         <div>
-          <label htmlFor="password" className="sr-only">Password</label>
+          <label htmlFor="password" className="sr-only">{t('password')}</label>
           <div className="flex gap-2">
             <input
               id="password"
               {...register('password')}
               type={passwordHidden ? 'password' : 'text'}
-              placeholder="Password"
+              placeholder={t('password_placeholder')}
               autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
               className="input input-bordered w-full"
               aria-invalid={!!errors.password}
@@ -111,25 +121,26 @@ export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
             />
             <button
               type="button"
-              className="btn btn-ghost"
+              className="btn btn-ghost rounded-sm"
               onClick={() => setPasswordHidden(v => !v)}
-              aria-label={passwordHidden ? 'Show password' : 'Hide password'}
+              aria-label={passwordHidden ? 'show password' : 'hide password'}
             >
-              {passwordHidden ? 'Show' : 'Hide'}
+              {passwordHidden ? t('show') : t('hide')}
             </button>
           </div>
-          {errors.password && <p id="password-error" className="text-sm text-red-400 mt-1">{errors.password.message}</p>}
+          {errors.password && <p id="password-error" className="text-sm text-red-400 mt-1">{t('password_rules')}</p>}
           <div className="mt-1">
-            <button type="button" className="btn btn-link text-sm px-0" onClick={onForgotPassword}>
-              Forgot password?
+            <button type="button" className="btn btn-link text-sm px-0" onClick={onForgotPassword} aria-label="forgot password">
+              {t('forgot_password')}
             </button>
           </div>
         </div>
         <button
           type="submit"
           disabled={!isValid || isSubmitting}
-          className="btn btn-primary w-full disabled:opacity-50"
+          className="btn btn-primary rounded-sm w-full disabled:opacity-50"
           aria-busy={isSubmitting}
+          aria-label={mode === 'sign-in' ? 'sign in' : 'sign up'}
         >
           {btnLabel}
         </button>

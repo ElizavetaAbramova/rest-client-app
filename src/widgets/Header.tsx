@@ -4,8 +4,11 @@ import React, { useEffect, useState } from 'react'
 import { signOut, onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
+import { useT } from '@/hooks/useT'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
-function Header() {
+export default function Header() {
+  const { t } = useT()
   const router = useRouter()
   const [user, setUser] = useState<null | { email: string }>(null)
 
@@ -23,27 +26,21 @@ function Header() {
     <header className="text-neutral-content sticky top-0 z-2 flex flex-wrap items-center justify-center gap-3 bg-transparent p-3 backdrop-blur-md transition-colors duration-300 md:flex-nowrap md:justify-between">
       <div className="w-50 text-center text-xl">
         <Link href="/" className="btn btn-ghost rounded-sm text-xl normal-case hover:bg-sky-900">
-          REST Client
+          {t('app_title')}
         </Link>
       </div>
-      <div className="buttons-block flex w-full flex-wrap justify-center gap-5 md:flex-nowrap md:justify-end">
-        <label className="swap">
-          <input type="checkbox" />
-          <div className="swap-on">EN</div>
-          <div className="swap-off">RU</div>
-        </label>
+      <div className="buttons-block flex w-full flex-wrap items-center justify-center gap-5 md:flex-nowrap md:justify-end">
+        <LanguageSwitcher />
         {!user && (
           <>
-            <Link href="/auth/sign-in" className="btn btn-soft btn-primary rounded-sm">Sign In</Link>
-            <Link href="/auth/sign-up" className="btn btn-primary rounded-sm">Sign Up</Link>
+            <Link href="/auth/sign-in" className="btn btn-soft btn-primary rounded-sm">{t('sign_in')}</Link>
+            <Link href="/auth/sign-up" className="btn btn-primary rounded-sm">{t('sign_up')}</Link>
           </>
         )}
         {user && (
-          <button onClick={handleSignOut} className="btn btn-primary rounded-sm">Sign Out</button>
+          <button onClick={handleSignOut} className="btn btn-primary rounded-sm">{t('sign_out')}</button>
         )}
       </div>
     </header>
   )
 }
-
-export default Header

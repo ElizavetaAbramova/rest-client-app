@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithI18n } from './test-utils'
 import Header from '@/widgets/Header'
 
 describe('Header', () => {
   it('renders nav buttons', () => {
-    render(<Header />)
+    renderWithI18n(<Header />)
     expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /sign up/i })).toBeInTheDocument()
   })
