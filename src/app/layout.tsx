@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/widgets/Header';
 import Footer from '@/widgets/Footer';
+import AuthExpiryClient from '@/components/AuthExpiryClient';
 
 export const metadata: Metadata = {
   title: 'REST Client App',
@@ -23,7 +24,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <Header></Header>
-        {children}
+        <AuthExpiryClient>{children}</AuthExpiryClient>
         <Footer></Footer>
       </body>
     </html>

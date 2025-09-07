@@ -19,7 +19,7 @@ export default function Page() {
         <div className="cards-container flex flex-wrap justify-center gap-5 pt-5">
           <ProfileCard
             img="/photo-Inna.jpg"
-            description="Inna"
+            description="AWS and Microsoft-certified NOC Engineer & Frontend Developer— React/Next.js, TypeScript, Firebase; cloud ops. Always learning."
             title="Inna"
             gitHub="https://github.com/InnaSodri"
           ></ProfileCard>
