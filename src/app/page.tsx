@@ -1,30 +1,29 @@
-import Image from 'next/image';
+'use client';
+import ProfileCard from '@/widgets/ProfileCard';
+import { useT } from '@/hooks/useT';
+import { profiles } from '@/constants/profiles';
+
 export default function Page() {
+  const { t } = useT();
   return (
-    <div className="hero bg-base-200 min-h-screen">
-      <div className="hero-content text-center">
-        <div className="max-w-md">
-          <div className="mb-6 flex justify-center">
-            <div className="animate-bounce">
-              <Image src="/logo.png" alt="logo" width={200} height={200} />
-            </div>
-          </div>
-
-          <h1 className="text-primary text-5xl font-bold">Welcome</h1>
-
-          <p className="py-6 text-lg">
-            Start your journey with daisyUI. Explore the features and enjoy the
-            experience.
-          </p>
-
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <button className="btn btn-primary">Get Started</button>
-            <button className="btn btn-outline btn-secondary">
-              Learn More
-            </button>
-          </div>
-        </div>
+    <main className="hero bg-base-300 block min-h-screen p-3 md:p-10">
+      <h1 className="mb-4 text-center text-2xl">{t('team_title')}</h1>
+      <div className="m-auto text-center md:w-1/2">
+        <p>{t('team_intro')}</p>
       </div>
-    </div>
+      <div className="cards-container flex flex-wrap justify-center gap-5 pt-5">
+        {profiles.map((profile) => {
+          return (
+            <ProfileCard
+              key={profile.title}
+              img={profile.img}
+              description={t(profile.description)}
+              title={profile.title}
+              gitHub={profile.gitHub}
+            />
+          );
+        })}
+      </div>
+    </main>
   );
 }

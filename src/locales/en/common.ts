@@ -1,0 +1,53 @@
+const en = {
+  app_title: 'REST Client',
+  sign_in: 'Sign in',
+  sign_out: 'Sign out',
+  email: 'Email',
+  password: 'Password',
+  home: 'Home',
+  welcome: 'Welcome',
+  send_request: 'Send request',
+  method: 'Method',
+  url: 'URL',
+  headers: 'Headers',
+  body: 'Body',
+  response: 'Response',
+  copy: 'Copy',
+  clear: 'Clear',
+  save: 'Save',
+  cancel: 'Cancel',
+  language: 'Language',
+  sign_up: 'Sign up',
+  not_found_message: 'Sorry, page not found. Probably wrong URL. Probably page stolen by aliens.',
+  back_home: 'Back to home',
+  team_title: 'Hi! This is our team',
+  team_intro:
+    'This is a team project, developed as part of the React course at Rolling Scopes School (RSSchool). Under the hood, we use Next.js and React for a performant, scalable UI and seamless routing. TypeScript provides strong typing and safer refactoring, while Tailwind CSS ensures a consistent, responsive design with minimal overhead. For reliability and confidence, we write unit and integration tests with Vitest, enabling rapid iteration without sacrificing quality.',
+  inna_desc:
+    'AWS and Microsoft-certified NOC Engineer & Frontend Developer— React/Next.js, TypeScript, Firebase; cloud ops. Always learning.',
+  sergey_desc: 'A physicist who wanted interfaces better than those of an oscilloscope.',
+  elizaveta_desc:
+    'My current main goal is to become a good Frontend Developer. Excited to gain hands-on experience and continue growing as a developer within a team.',
+
+  sign_in_title: 'Sign in',
+  sign_up_title: 'Sign up',
+  signing_in: 'Signing in…',
+  creating_account: 'Creating account…',
+  email_placeholder: 'Enter email',
+  password_placeholder: 'Enter password',
+  show: 'Show',
+  hide: 'Hide',
+  show_password: 'Show password',
+  hide_password: 'Hide password',
+  forgot_password: 'Forgot password?',
+  password_rules: 'Min 8, 1 letter, 1 digit, 1 special',
+  enter_email_reset: 'Enter your email to reset password.',
+  reset_link_sent: 'Password reset link sent to your email.',
+  have_account: 'Already have an account?',
+  no_account: 'Don’t have an account?',
+  invalid_email: 'Invalid email address',
+  go_to_sign_in: 'Sign in',
+  go_to_sign_up: 'Sign up'
+} as const
+
+export default en
