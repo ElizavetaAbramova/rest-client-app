@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 
 describe('Footer', () => {
   test('renders links and copyright text', () => {
-    render(<Footer></Footer>);
+    render(<Footer />);
     expect(screen.getAllByRole('link').length).toBe(2);
     expect(screen.findByText('Copyright')).toBeTruthy();
   });

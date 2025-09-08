@@ -1,17 +1,21 @@
-import type { Metadata } from 'next'
-import './globals.css'
-import Providers from './providers'
-import Header from '@/widgets/Header'
-import Footer from '@/widgets/Footer'
-import AuthExpiryClient from '@/components/AuthExpiryClient'
+import type { Metadata } from 'next';
+import Providers from './providers';
+import Header from '@/widgets/Header';
+import Footer from '@/widgets/Footer';
+import AuthExpiryClient from '@/components/AuthExpiryClient';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'REST Client App',
   description: 'REST Client App made by RSSchool students',
-  icons: { icon: '/document-icon.png' }
-}
+  icons: { icon: '/document-icon.png' },
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -25,5 +29,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Providers>
       </body>
     </html>
-  )
+  );
 }

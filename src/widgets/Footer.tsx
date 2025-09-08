@@ -4,11 +4,12 @@ import React from 'react';
 function Footer() {
   return (
     <footer className="bg-base-400 flex flex-wrap items-end justify-center gap-3 p-5 md:flex-nowrap">
-      <nav className="pl-10 text-center">
+      <div className="pl-10 text-center">
         <a
           href="https://github.com/ksarise/rest-client-app"
           target="_blank"
           className="GitHub-link relative"
+          rel="noopener noreferrer"
         >
           <span className="tooltip absolute bottom-full left-[-70px] w-[160px]">
             Project on GitHub
@@ -22,12 +23,13 @@ function Footer() {
             className="github-logo m-auto"
           ></Image>
         </a>
-      </nav>
-      <nav className="text-center">
+      </div>
+      <div className="text-center">
         <a
           href="https://rs.school/courses/reactjs"
           target="_blank"
           className="course-link relative"
+          rel="noopener noreferrer"
         >
           <span className="tooltip absolute bottom-full left-[-70px] w-[140px]">
             React course
@@ -40,7 +42,7 @@ function Footer() {
             className="m-auto"
           />
         </a>
-      </nav>
+      </div>
       <p className="w-full text-center md:text-end">
         Copyright © {new Date().getFullYear()} - All right reserved
       </p>
