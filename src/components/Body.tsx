@@ -39,6 +39,19 @@ export default function Body() {
   const lineCount = useMemo(() => linesOf(value), [value]);
   const canPrettify = useMemo(() => looksLikeJson(value), [value]);
 
+  const validationError = useMemo(() => {
+    if (!mounted) return '';
+    const t = value.trim();
+    if (!t) return '';
+    if (!looksLikeJson(t)) return '';
+    try {
+      JSON.parse(t);
+      return '';
+    } catch {
+      return 'Not valid JSON. Use only double quotes (") and no trailing commas/semicolon.';
+    }
+  }, [mounted, value]);
+
   const handleBlur = useCallback(() => {
     const encoded = encodeBase64Url(value);
     setHashParam('b', encoded);
@@ -51,24 +64,31 @@ export default function Body() {
       setValue(pretty);
       taRef.current?.focus();
     } catch {
-      alert('Это не JSON, форматирование недоступно');
+      const hints: string[] = [];
+      if (/'\s*:/.test(value) || /:\s*'/.test(value))
+        hints.push('Use only double quotes (").');
+      if (/,(\s*[}\]])/.test(value))
+        hints.push('Remove trailing comma before } or ].');
+      if (/;\s*$/.test(value)) hints.push('Remove semicolon at the end.');
+      alert('Not valid JSON.\n' + (hints.length ? hints.join('\n') : ''));
     }
   }, [value]);
 
   const shownBytes = mounted ? sizeBytes : 0;
   const shownLines = mounted ? lineCount : 0;
-  const prettifyDisabled = !mounted || !canPrettify;
+  const prettifyDisabled = !mounted || !canPrettify || !!validationError;
 
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium">Body</label>
       <textarea
         ref={taRef}
-        className="min-h-56 w-full rounded-xl border p-3 font-mono text-sm"
+        className={`min-h-56 w-full rounded-xl border p-3 font-mono text-sm ${validationError ? 'border-red-500 focus:ring-2 focus:ring-red-400 focus:outline-none' : ''}`}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={handleBlur}
         placeholder="Raw request body"
+        aria-invalid={!!validationError}
       />
       <div className="flex items-center gap-2">
         <button
@@ -82,6 +102,11 @@ export default function Body() {
         <span className="text-xs opacity-70">{shownBytes} bytes</span>
         <span className="text-xs opacity-70">{shownLines} lines</span>
       </div>
+      {validationError && (
+        <span className="text-lg font-semibold text-red-700">
+          {validationError}
+        </span>
+      )}
     </div>
   );
 }
