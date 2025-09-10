@@ -1,5 +1,5 @@
 'use client';
-import React, { BaseSyntheticEvent, useState } from 'react';
+import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import {
   convert,
   getLanguageList,
@@ -7,10 +7,15 @@ import {
   Variant,
 } from 'postman-code-generators';
 import { Request } from 'postman-collection';
-import '../app/styles/code-generator.css';
+interface Header {
+  key: string;
+  value: string;
+}
 interface Props {
   url: string;
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
+  json: string;
+  headers: Header[];
 }
 
 function CodeGenerator(prop: Props) {
@@ -22,6 +27,7 @@ function CodeGenerator(prop: Props) {
   const [isSelectVariantDisabled, setVariantDisable] = useState(true);
   const [copied, setCopied] = useState(false);
   const [isError, setIsError] = useState(false);
+
   const languages = getLanguageList();
 
   const handleCopy = () => {
@@ -31,6 +37,8 @@ function CodeGenerator(prop: Props) {
   };
 
   const handleGeneration = (language: string, variant: string) => {
+    if (!prop.url || !prop.method) return;
+
     const request = new Request({
       url: prop.url,
       method: prop.method,
@@ -39,10 +47,11 @@ function CodeGenerator(prop: Props) {
           key: 'Content-Type',
           value: 'application/json',
         },
+        ...prop.headers,
       ],
       body: {
         mode: 'raw',
-        raw: JSON.stringify({ title: 'foo', body: 'bar', userId: 1 }),
+        raw: prop.json,
       },
     });
 
@@ -60,9 +69,9 @@ function CodeGenerator(prop: Props) {
         setIsError(true);
         console.error(error);
       } else {
+        setIsError(false);
         setGeneratedCode(snippet);
-        const array = snippet.split('\n');
-        setGeneratedCodeArray(array);
+        setGeneratedCodeArray(snippet.split('\n'));
       }
     });
   };
@@ -86,11 +95,31 @@ function CodeGenerator(prop: Props) {
     handleGeneration(selectedLanguage, variant);
   };
 
+  useEffect(() => {
+    if (languages.length > 0 && selectedLanguage === '') {
+      const firstLang = languages[0];
+      setSelectedLanguage(firstLang.key);
+      setVariantsList(firstLang.variants);
+      setVariantDisable(false);
+
+      const firstVariant = firstLang.variants[0].key;
+      setSelectedVariant(firstVariant);
+
+      handleGeneration(firstLang.key, firstVariant);
+    }
+  }, [languages]);
+
+  useEffect(() => {
+    if (selectedLanguage && selectedVariant) {
+      handleGeneration(selectedLanguage, selectedVariant);
+    }
+  }, [prop.url, prop.method, prop.json, prop.headers]);
+
   return (
     <div className="w-1/2 min-w-3xs">
       <div className="flex w-full min-w-3xs flex-wrap justify-center gap-2 md:gap-0">
         <select
-          defaultValue="Select a language"
+          value={selectedLanguage}
           className="select w-full min-w-[160px] md:w-1/2"
           onChange={handleSelectLanguage}
           name="select-language"
@@ -105,7 +134,7 @@ function CodeGenerator(prop: Props) {
           })}
         </select>
         <select
-          defaultValue={selectedVariant}
+          value={selectedVariant}
           className="select w-full min-w-[160px] md:w-1/2"
           onChange={handleSelectVariant}
           disabled={isSelectVariantDisabled}
