@@ -36,6 +36,9 @@ export default function Header() {
       </div>
       <div className="buttons-block flex w-full flex-wrap items-center justify-center gap-2 md:flex-nowrap md:justify-end md:gap-5">
         <LanguageSwitcher />
+        <Link href="/client" className="btn btn-soft btn-primary rounded-sm">
+          Client
+        </Link>
         {!user && (
           <>
             <Link

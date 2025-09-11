@@ -7,7 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 
 const SKEW_MS = 3000;
 
-const PUBLIC_ROUTES = ['/auth/sign-in', '/auth/sign-up', '/404'];
+const PUBLIC_ROUTES = ['/auth/sign-in', '/auth-sign-up', '/404'];
 
 export function useAuthExpiryRedirect() {
   const router = useRouter();
@@ -25,8 +25,11 @@ export function useAuthExpiryRedirect() {
     const unsub = onIdTokenChanged(auth, async (user) => {
       clearTimer();
 
+      const allowClient =
+        pathname === '/client' || /^\/[a-z]{2}\/client$/.test(pathname);
+
       if (!user) {
-        if (!PUBLIC_ROUTES.includes(pathname)) {
+        if (!PUBLIC_ROUTES.includes(pathname) && !allowClient) {
           router.replace('/');
         }
         return;
