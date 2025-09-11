@@ -1,7 +1,16 @@
 'use client';
-import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
-import { encodeBase64Url, decodeBase64Url } from '@/utils/base64url';
-import { getHashParam, setHashParam } from '@/utils/hashParams';
+import {
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  KeyboardEvent,
+} from 'react';
+import { decodeBase64Url } from '@/utils/base64url';
+import { getHashParam } from '@/utils/hashParams';
+import '@/lib/i18n';
+import { useT } from '@/hooks/useT';
 
 function bytesOf(text: string): number {
   return new Blob([text]).size;
@@ -20,6 +29,7 @@ function looksLikeJson(text: string): boolean {
 }
 
 export default function Body() {
+  const { t } = useT();
   const [value, setValue] = useState<string>('');
   const [mounted, setMounted] = useState(false);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
@@ -34,6 +44,39 @@ export default function Body() {
       setValue('');
     }
   }, []);
+
+  const enc = (s: string) =>
+    btoa(unescape(encodeURIComponent(s)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  const setHashParam = (key: string, raw: string) => {
+    const q = new URLSearchParams(location.hash.replace(/^#/, ''));
+    if (raw) q.set(key, enc(raw));
+    else q.delete(key);
+    location.hash = q.toString();
+  };
+
+  const ensureJsonContentType = () => {
+    const q = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const h = q.get('h');
+    let rows: Array<{ k: string; v: string }> = [];
+    if (h) {
+      try {
+        rows = JSON.parse(decodeBase64Url(h)) as Array<{
+          k: string;
+          v: string;
+        }>;
+      } catch {
+        rows = [];
+      }
+    }
+    const hasCT = rows.some((r) => r.k.toLowerCase() === 'content-type');
+    if (!hasCT) {
+      rows = [...rows, { k: 'Content-Type', v: 'application/json' }];
+      setHashParam('h', JSON.stringify(rows));
+    }
+  };
 
   const sizeBytes = useMemo(() => bytesOf(value), [value]);
   const lineCount = useMemo(() => linesOf(value), [value]);
@@ -53,8 +96,8 @@ export default function Body() {
   }, [mounted, value]);
 
   const handleBlur = useCallback(() => {
-    const encoded = encodeBase64Url(value);
-    setHashParam('b', encoded);
+    setHashParam('b', value);
+    if (looksLikeJson(value)) ensureJsonContentType();
   }, [value]);
 
   const handlePrettify = useCallback(() => {
@@ -74,20 +117,27 @@ export default function Body() {
     }
   }, [value]);
 
+  const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      window.dispatchEvent(new CustomEvent('requestline:send'));
+    }
+  };
+
   const shownBytes = mounted ? sizeBytes : 0;
   const shownLines = mounted ? lineCount : 0;
   const prettifyDisabled = !mounted || !canPrettify || !!validationError;
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium">Body</label>
+      <label className="text-sm font-medium">{t('body_label')}</label>
       <textarea
         ref={taRef}
         className={`min-h-56 w-full rounded-xl border p-3 font-mono text-sm ${validationError ? 'border-red-500 focus:ring-2 focus:ring-red-400 focus:outline-none' : ''}`}
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        onKeyDown={onKey}
         onBlur={handleBlur}
-        placeholder="Raw request body"
+        placeholder={t('body_placeholder')}
         aria-invalid={!!validationError}
       />
       <div className="flex items-center gap-2">
@@ -97,10 +147,14 @@ export default function Body() {
           disabled={prettifyDisabled}
           className="rounded-xl border px-3 py-1 text-sm disabled:opacity-50"
         >
-          Prettify
+          {t('prettify')}
         </button>
-        <span className="text-xs opacity-70">{shownBytes} bytes</span>
-        <span className="text-xs opacity-70">{shownLines} lines</span>
+        <span className="text-xs opacity-70">
+          {shownBytes} {t('bytes')}
+        </span>
+        <span className="text-xs opacity-70">
+          {shownLines} {t('lines')}
+        </span>
       </div>
       {validationError && (
         <span className="text-lg font-semibold text-red-700">

@@ -1,11 +1,16 @@
 'use client';
+import RequestLine from '@/components/RequestLine';
+import HeadersEditor from '@/components/HeadersEditor';
 import Body from '@/components/Body';
+import RequestRunner from '@/components/RequestRunner';
 
 export default function ClientPage() {
   return (
-    <main className="bg-base-300 min-h-screen p-4 md:p-8">
-      <h1 className="mb-4 text-2xl">REST Client</h1>
+    <div className="space-y-4 p-4">
+      <RequestLine />
+      <HeadersEditor />
       <Body />
-    </main>
+      <RequestRunner />
+    </div>
   );
 }
