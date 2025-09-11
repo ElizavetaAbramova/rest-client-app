@@ -7,16 +7,7 @@ import {
   Variant,
 } from 'postman-code-generators';
 import { Request } from 'postman-collection';
-interface Header {
-  key: string;
-  value: string;
-}
-interface Props {
-  url: string;
-  method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
-  json: string;
-  headers: Header[];
-}
+import { Props } from '../../types/CodeGeneratorProps';
 
 function CodeGenerator(prop: Props) {
   const [generatedCode, setGeneratedCode] = useState('');
@@ -123,6 +114,7 @@ function CodeGenerator(prop: Props) {
           className="select w-full min-w-[160px] md:w-1/2"
           onChange={handleSelectLanguage}
           name="select-language"
+          aria-label="select-language"
         >
           <option disabled={true}>Select a language</option>
           {languages.map((lang, index) => {
@@ -139,6 +131,7 @@ function CodeGenerator(prop: Props) {
           onChange={handleSelectVariant}
           disabled={isSelectVariantDisabled}
           name="select-variant"
+          aria-label="select-variant"
         >
           <option disabled={true}>Select a variant</option>
           {variantsList.map((variant) => {
@@ -150,6 +143,7 @@ function CodeGenerator(prop: Props) {
       {generatedCode !== '' && (
         <div className="mockup-code mt-2 w-full rounded-sm pt-10 before:content-none">
           <button
+            aria-label="copy-button"
             className="group absolute top-[5px] right-[5px] rounded-md bg-gray-800 p-2 text-white hover:bg-gray-700"
             onClick={handleCopy}
           >
