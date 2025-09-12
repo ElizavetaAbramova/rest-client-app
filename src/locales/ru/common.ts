@@ -98,6 +98,7 @@ const ru = {
   header_name: 'Имя',
   header_value: 'Значение',
   raw_request_body: 'Сырой текст запроса',
+  code_generator_label: 'Генератор кода',
 } as const;
 
 export default ru;

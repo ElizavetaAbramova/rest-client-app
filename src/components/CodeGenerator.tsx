@@ -8,8 +8,10 @@ import {
 } from 'postman-code-generators';
 import { Request } from 'postman-collection';
 import { Props } from '../../types/CodeGeneratorProps';
+import { useT } from '@/hooks/useT';
 
 function CodeGenerator(prop: Props) {
+  const { t } = useT();
   const [generatedCode, setGeneratedCode] = useState('');
   const [generatedCodeArray, setGeneratedCodeArray] = useState<string[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState('');
@@ -107,11 +109,14 @@ function CodeGenerator(prop: Props) {
   }, [prop.url, prop.method, prop.json, prop.headers]);
 
   return (
-    <div className="w-1/2 min-w-3xs">
+    <div className="flex w-full min-w-3xs flex-col p-0 md:w-1/2 md:p-5 md:pt-0">
+      <label className="pb-3 text-sm font-medium">
+        {t('code_generator_label')}
+      </label>
       <div className="flex w-full min-w-3xs flex-wrap justify-center gap-2 md:gap-0">
         <select
           value={selectedLanguage}
-          className="select w-full min-w-[160px] md:w-1/2"
+          className="select w-full min-w-[160px] rounded-xl border md:w-1/2"
           onChange={handleSelectLanguage}
           name="select-language"
           aria-label="select-language"
@@ -127,7 +132,7 @@ function CodeGenerator(prop: Props) {
         </select>
         <select
           value={selectedVariant}
-          className="select w-full min-w-[160px] md:w-1/2"
+          className="select w-full min-w-[160px] rounded-xl border md:w-1/2"
           onChange={handleSelectVariant}
           disabled={isSelectVariantDisabled}
           name="select-variant"
@@ -141,7 +146,7 @@ function CodeGenerator(prop: Props) {
       </div>
       {isError && <p className="text-red-300">Error: incorrect request</p>}
       {generatedCode !== '' && (
-        <div className="mockup-code mt-2 w-full rounded-sm pt-10 before:content-none">
+        <div className="mockup-code mt-2 w-full rounded-xl pt-10 before:content-none">
           <button
             aria-label="copy-button"
             className="group absolute top-[5px] right-[5px] rounded-md bg-gray-800 p-2 text-white hover:bg-gray-700"
