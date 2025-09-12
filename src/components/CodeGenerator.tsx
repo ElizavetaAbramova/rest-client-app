@@ -7,10 +7,10 @@ import {
   Variant,
 } from 'postman-code-generators';
 import { Request } from 'postman-collection';
-import { Props } from '../../types/CodeGeneratorProps';
 import { useT } from '@/hooks/useT';
+import { useUrlRequestState } from '@/hooks/useUrlRequestState';
 
-function CodeGenerator(prop: Props) {
+function CodeGenerator() {
   const { t } = useT();
   const [generatedCode, setGeneratedCode] = useState('');
   const [generatedCodeArray, setGeneratedCodeArray] = useState<string[]>([]);
@@ -20,8 +20,8 @@ function CodeGenerator(prop: Props) {
   const [isSelectVariantDisabled, setVariantDisable] = useState(true);
   const [copied, setCopied] = useState(false);
   const [isError, setIsError] = useState(false);
-
   const languages = getLanguageList();
+  const { url, method, body, headers } = useUrlRequestState();
 
   const handleCopy = () => {
     setCopied(true);
@@ -30,22 +30,19 @@ function CodeGenerator(prop: Props) {
   };
 
   const handleGeneration = (language: string, variant: string) => {
-    if (!prop.url || !prop.method) return;
+    if (!url || !method) return;
 
     const request = new Request({
-      url: prop.url,
-      method: prop.method,
+      url: url,
+      method: method,
       header: [
         {
           key: 'Content-Type',
           value: 'application/json',
         },
-        ...prop.headers,
+        ...headers,
       ],
-      body: {
-        mode: 'raw',
-        raw: prop.json,
-      },
+      body: body,
     });
 
     const options: Options = {
@@ -91,22 +88,19 @@ function CodeGenerator(prop: Props) {
   useEffect(() => {
     if (languages.length > 0 && selectedLanguage === '') {
       const firstLang = languages[0];
+      const firstVariant = firstLang.variants[0].key;
       setSelectedLanguage(firstLang.key);
       setVariantsList(firstLang.variants);
       setVariantDisable(false);
-
-      const firstVariant = firstLang.variants[0].key;
       setSelectedVariant(firstVariant);
-
       handleGeneration(firstLang.key, firstVariant);
     }
   }, [languages]);
 
   useEffect(() => {
-    if (selectedLanguage && selectedVariant) {
-      handleGeneration(selectedLanguage, selectedVariant);
-    }
-  }, [prop.url, prop.method, prop.json, prop.headers]);
+    if (!url || !method) return;
+    handleGeneration(selectedLanguage, selectedVariant);
+  }, [url, method, body, headers]);
 
   return (
     <div className="flex w-full min-w-3xs flex-col p-0 md:w-1/2 md:p-5 md:pt-0">

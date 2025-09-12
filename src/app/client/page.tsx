@@ -12,12 +12,7 @@ export default function ClientPage() {
       <HeadersEditor />
       <div className="flex flex-wrap">
         <Body />
-        <CodeGenerator
-          url="https://dummyjson.com/test"
-          method="GET"
-          json=""
-          headers={[{ key: '', value: '' }]}
-        />
+        <CodeGenerator />
       </div>
       <RequestRunner />
     </div>
