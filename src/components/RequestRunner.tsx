@@ -26,7 +26,7 @@ const TIMEOUT_MS = 15000;
 
 type HeaderRow = { k?: unknown; v?: unknown };
 
-function parseHeaders(h: string | undefined): Record<string, string> {
+export function parseHeaders(h: string | undefined): Record<string, string> {
   if (!h) return {};
   try {
     const parsed = JSON.parse(decodeBase64Url(h)) as unknown;

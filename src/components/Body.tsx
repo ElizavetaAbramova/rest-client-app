@@ -128,7 +128,7 @@ export default function Body() {
   const prettifyDisabled = !mounted || !canPrettify || !!validationError;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full flex-col gap-2 md:w-1/2">
       <label className="text-sm font-medium">{t('body_label')}</label>
       <textarea
         ref={taRef}
