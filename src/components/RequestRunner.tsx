@@ -70,7 +70,7 @@ export default function RequestRunner() {
       const m = mEnc ? decodeBase64Url(mEnc).toUpperCase() : 'GET';
       setMethod(m);
       setUrl(uEnc ? decodeBase64Url(uEnc) : '');
-      setBody(bEnc ? decodeBase64Url(bEnc) : '');
+      setBody(bEnc ?? '');
       setHeadersObj(parseHeaders(hEnc));
       setStateWarn(null);
     } catch {
@@ -92,7 +92,7 @@ export default function RequestRunner() {
         const m = mEnc ? decodeBase64Url(mEnc).toUpperCase() : 'GET';
         setMethod(m);
         setUrl(uEnc ? decodeBase64Url(uEnc) : '');
-        setBody(bEnc ? decodeBase64Url(bEnc) : '');
+        setBody(bEnc ?? '');
         setHeadersObj(parseHeaders(hEnc));
         setStateWarn(null);
       } catch {
@@ -125,7 +125,13 @@ export default function RequestRunner() {
       init.headers = headersObj;
     }
     if (method !== 'GET' && method !== 'HEAD' && body) {
-      init.body = body;
+      console.log('body', body);
+      console.log('decoded', decodeBase64Url(body));
+      try {
+        init.body = decodeBase64Url(body);
+      } catch {
+        init.body = body;
+      }
     }
 
     const t0 = performance.now();
@@ -191,7 +197,6 @@ export default function RequestRunner() {
         const blob = new Blob([buf]);
         downloadUrl = URL.createObjectURL(blob);
       }
-
       setResp({
         status: res.status,
         statusText: res.statusText,
@@ -237,7 +242,7 @@ export default function RequestRunner() {
       const m = mEnc ? decodeBase64Url(mEnc).toUpperCase() : 'GET';
       setMethod(m);
       setUrl(uEnc ? decodeBase64Url(uEnc) : '');
-      setBody(bEnc ? decodeBase64Url(bEnc) : '');
+      setBody(bEnc ?? '');
       setHeadersObj(parseHeaders(hEnc));
       setTimeout(() => send(), 0);
       if (typeof window !== 'undefined')
