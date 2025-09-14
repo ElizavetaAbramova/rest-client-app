@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import CodeGenerator from '../components/CodeGenerator';
 import { convert, getLanguageList, Language } from 'postman-code-generators';
-import { Props } from '../../types/CodeGeneratorProps';
+import { useUrlRequestState } from '@/hooks/useUrlRequestState';
+import { Row } from '../../types/Row';
 
 vi.mock('postman-code-generators', () => {
   return {
@@ -10,9 +11,15 @@ vi.mock('postman-code-generators', () => {
     convert: vi.fn(),
   };
 });
+vi.mock('@/hooks/useUrlRequestState', () => {
+  return {
+    useUrlRequestState: vi.fn(),
+  };
+});
 
 const getLanguageListMock = vi.mocked(getLanguageList);
 const convertMock = vi.mocked(convert);
+const useUrlRequestStateMock = vi.mocked(useUrlRequestState);
 
 describe('CodeGenerator', () => {
   const mockLanguages: Language[] = [
@@ -30,20 +37,22 @@ describe('CodeGenerator', () => {
     },
   ];
 
-  const defaultProps: Props = {
+  const defaultProps = {
     url: 'https://api.example.com',
     method: 'POST',
     json: '{"foo":"bar"}',
-    headers: [{ key: 'Authorization', value: 'Bearer token' }],
+    body: '{"some": "info"}',
+    headers: [{ key: 'Authorization', value: 'Bearer token' }] as Row[],
   };
   getLanguageListMock.mockReturnValue(mockLanguages);
+  useUrlRequestStateMock.mockReturnValue(defaultProps);
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders language and variants list', () => {
-    render(<CodeGenerator {...defaultProps} />);
+    render(<CodeGenerator />);
 
     expect(screen.getByLabelText('select-language')).toBeInTheDocument();
     expect(screen.getByLabelText('select-variant')).toBeInTheDocument();
@@ -54,7 +63,7 @@ describe('CodeGenerator', () => {
       cb(null, 'some generated code');
     });
 
-    render(<CodeGenerator {...defaultProps} />);
+    render(<CodeGenerator />);
 
     expect(convertMock).toHaveBeenCalled();
     expect(screen.getByLabelText('select-language')).toHaveValue('javascript');
@@ -73,7 +82,7 @@ describe('CodeGenerator', () => {
       }
     });
 
-    render(<CodeGenerator {...defaultProps} />);
+    render(<CodeGenerator />);
 
     fireEvent.change(screen.getByLabelText('select-language'), {
       target: { value: 'python' },
@@ -97,7 +106,7 @@ describe('CodeGenerator', () => {
       cb(new Error('fail'), '');
     });
 
-    render(<CodeGenerator {...defaultProps} />);
+    render(<CodeGenerator />);
 
     expect(screen.getByText('Error: incorrect request')).toBeInTheDocument();
     expect(screen.queryByText('some generated code')).not.toBeInTheDocument();
@@ -113,7 +122,7 @@ describe('CodeGenerator', () => {
       cb(null, 'some code');
     });
 
-    render(<CodeGenerator {...defaultProps} />);
+    render(<CodeGenerator />);
     fireEvent.click(screen.getByLabelText('copy-button'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('some code');
   });
