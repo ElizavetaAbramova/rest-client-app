@@ -18,17 +18,18 @@ const en = {
   cancel: 'Cancel',
   language: 'Language',
   sign_up: 'Sign up',
-  not_found_message: 'Sorry, page not found. Probably wrong URL. Probably page stolen by aliens.',
+  not_found_message:
+    'Sorry, page not found. Probably wrong URL. Probably page stolen by aliens.',
   back_home: 'Back to home',
   team_title: 'Hi! This is our team',
   team_intro:
     'This is a team project, developed as part of the React course at Rolling Scopes School (RSSchool). Under the hood, we use Next.js and React for a performant, scalable UI and seamless routing. TypeScript provides strong typing and safer refactoring, while Tailwind CSS ensures a consistent, responsive design with minimal overhead. For reliability and confidence, we write unit and integration tests with Vitest, enabling rapid iteration without sacrificing quality.',
   inna_desc:
     'AWS and Microsoft-certified NOC Engineer & Frontend Developer— React/Next.js, TypeScript, Firebase; cloud ops. Always learning.',
-  sergey_desc: 'A physicist who wanted interfaces better than those of an oscilloscope.',
+  sergey_desc:
+    'A physicist who wanted interfaces better than those of an oscilloscope.',
   elizaveta_desc:
     'My current main goal is to become a good Frontend Developer. Excited to gain hands-on experience and continue growing as a developer within a team.',
-
   sign_in_title: 'Sign in',
   sign_up_title: 'Sign up',
   signing_in: 'Signing in…',
@@ -47,7 +48,60 @@ const en = {
   no_account: 'Don’t have an account?',
   invalid_email: 'Invalid email address',
   go_to_sign_in: 'Sign in',
-  go_to_sign_up: 'Sign up'
-} as const
+  go_to_sign_up: 'Sign up',
+  response_status: 'Status',
+  response_time: 'Time',
+  response_size: 'Size',
+  response_content_type: 'Content-Type',
+  response_headers: 'Headers',
+  response_body: 'Body',
+  response_name: 'Name',
+  response_value: 'Value',
+  response_show_all: 'Show all',
+  response_collapse: 'Collapse',
+  response_binary_note: 'Cannot display binary content',
+  response_download: 'Download file',
+  response_empty: 'Run a request to see the result',
+  error_title: 'Error',
+  error_cors:
+    'Request blocked by CORS policy. Try a proxy, add CORS headers on the server, or call from the same origin.',
+  error_timeout:
+    'Request timed out. Check server availability or increase timeout.',
+  error_network: 'Network error. Check your connection and server address.',
+  error_aborted: 'Request aborted. Try again.',
 
-export default en
+  send: 'Send',
+  share: 'Share',
+  url_placeholder: 'https://example.com',
+
+  add_header: 'Add header',
+  apply_headers: 'Apply headers',
+  reset: 'Reset',
+  remove: 'Remove',
+  headers_name: 'Name',
+  headers_value: 'Value',
+
+  body_label: 'Body',
+  body_placeholder: 'Raw request body',
+  prettify: 'Prettify',
+  bytes: 'bytes',
+  lines: 'lines',
+
+  long_url_warning: 'URL is very long; consider shortening body or headers',
+  invalid_url_state: 'Ignored invalid URL state',
+
+  cannot_display_binary: 'Cannot display binary content',
+  download_file: 'Download file',
+  show_all: 'Show all',
+  headers_add: 'Add header',
+  headers_apply: 'Apply headers',
+  headers_clear: 'Clear',
+  headers_reset: 'Reset',
+  headers_remove: 'Remove',
+  header_name: 'Name',
+  header_value: 'Value',
+  raw_request_body: 'Raw request body',
+  code_generator_label: 'Code generator',
+} as const;
+
+export default en;
