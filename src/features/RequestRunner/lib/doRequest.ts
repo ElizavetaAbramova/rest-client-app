@@ -49,7 +49,7 @@ export async function doRequest(
           : bodyText.length;
 
     let pretty = bodyText;
-    if (!isBinary) {
+    if (isJson && !isBinary && bodyText) {
       try {
         const obj = JSON.parse(bodyText);
         pretty = JSON.stringify(obj, null, 2);

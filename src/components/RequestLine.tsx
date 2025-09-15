@@ -54,7 +54,7 @@ export default function RequestLine() {
           console.error(e);
         }
       }
-    } catch (e){
+    } catch (e) {
       console.error(e);
     }
   }, []);
@@ -67,18 +67,18 @@ export default function RequestLine() {
         if (mEnc) {
           try {
             setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
-          } catch (e){
+          } catch (e) {
             console.error(e);
           }
         }
         if (uEnc) {
           try {
             setUrl(decodeBase64Url(uEnc));
-          } catch (e){
+          } catch (e) {
             console.error(e);
           }
         }
-      } catch (e){
+      } catch (e) {
         console.error(e);
       }
     };

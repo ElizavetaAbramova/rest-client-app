@@ -1,19 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, waitFor, act } from '@testing-library/react';
-import { renderWithI18n } from './test-utils';
-import RequestRunner from '@/components/RequestRunner';
-
-const enc = (s: string) =>
-  btoa(unescape(encodeURIComponent(s)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
+import { renderWithI18n, makeHash } from './test-utils';
+import RequestRunner from '@/widgets/RequestRunner/ui/RequestRunner';
 
 describe('RequestRunner more branches', () => {
   it('handles fetch rejection (network error)', async () => {
-    const m = enc('GET');
-    const u = enc('https://api.example.com/crash');
-    window.location.hash = `m=${m}&u=${u}`;
+    window.location.hash = makeHash({
+      method: 'GET',
+      url: 'https://api.example.com/crash',
+    });
 
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('boom'));
 
@@ -47,9 +42,10 @@ describe('RequestRunner more branches', () => {
       vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     }
 
-    const m = enc('GET');
-    const u = enc('https://api.example.com/empty');
-    window.location.hash = `m=${m}&u=${u}`;
+    window.location.hash = makeHash({
+      method: 'GET',
+      url: 'https://api.example.com/empty',
+    });
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(null, { status: 204 })
@@ -71,9 +67,11 @@ describe('RequestRunner more branches', () => {
   });
 
   it('renders non-2xx status (e.g., 404) path', async () => {
-    const m = enc('GET');
-    const u = enc('https://api.example.com/404');
-    window.location.hash = `m=${m}&u=${u}`;
+    window.location.hash = makeHash({
+      method: 'GET',
+      url: 'https://api.example.com/404',
+      headers: [{ k: 'Accept', v: 'text/plain' }],
+    });
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response('not found', {
