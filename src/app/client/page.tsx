@@ -2,7 +2,7 @@
 import RequestLine from '@/components/RequestLine';
 import HeadersEditor from '@/components/HeadersEditor';
 import Body from '@/components/Body';
-import RequestRunner from '@/components/RequestRunner';
+import RequestRunner from '@/widgets/RequestRunner/ui/RequestRunner';
 import CodeGenerator from '@/components/CodeGenerator';
 
 export default function ClientPage() {
