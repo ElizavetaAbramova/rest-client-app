@@ -1,6 +1,6 @@
-import { initializeApp, getApps } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getAnalytics, isSupported } from 'firebase/analytics'
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -10,14 +10,16 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID!,
-}
+};
 
-export const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
-export const auth = getAuth(app)
+export const app = getApps().length
+  ? getApps()[0]
+  : initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 
-export let analytics: ReturnType<typeof getAnalytics> | undefined
+export let analytics: ReturnType<typeof getAnalytics> | undefined;
 if (typeof window !== 'undefined') {
-  isSupported().then(ok => {
-    if (ok) analytics = getAnalytics(app)
-  })
+  isSupported().then((ok) => {
+    if (ok) analytics = getAnalytics(app);
+  });
 }

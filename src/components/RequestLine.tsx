@@ -1,6 +1,8 @@
 'use client';
-import { useState, ChangeEvent, KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { useT } from '@/hooks/useT';
+import { setHashParam, getHashParam } from '@/utils/hashParams';
+import { decodeBase64Url } from '@/utils/base64url';
 
 const methods = [
   'GET',
@@ -19,21 +21,6 @@ const enc = (s: string) =>
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 
-const setHash = (
-  m: Method,
-  u: string,
-  b: string,
-  h: Record<string, string>
-) => {
-  const parts = [
-    `m=${enc(m)}`,
-    u ? `u=${enc(u)}` : '',
-    b ? `b=${enc(b)}` : '',
-    Object.keys(h).length ? `h=${enc(JSON.stringify(h))}` : '',
-  ].filter(Boolean);
-  location.hash = parts.join('&');
-};
-
 const isValidUrl = (s: string) => {
   try {
     new URL(s);
@@ -47,31 +34,90 @@ export default function RequestLine() {
   const { t } = useT();
   const [method, setMethod] = useState<Method>('GET');
   const [url, setUrl] = useState('');
-  const [body] = useState('');
-  const [headers] = useState<Record<string, string>>({});
+  const debRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    try {
+      const mEnc = getHashParam('m');
+      const uEnc = getHashParam('u');
+      if (mEnc) {
+        try {
+          setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      if (uEnc) {
+        try {
+          setUrl(decodeBase64Url(uEnc));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onHash = () => {
+      try {
+        const mEnc = getHashParam('m');
+        const uEnc = getHashParam('u');
+        if (mEnc) {
+          try {
+            setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        if (uEnc) {
+          try {
+            setUrl(decodeBase64Url(uEnc));
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   const onChangeMethod = (e: ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value as Method;
     setMethod(v);
-    setHash(v, url, body, headers);
+    setHashParam('m', enc(v));
+  };
+
+  const saveUrlNow = (v: string) => {
+    setHashParam('u', enc(v));
   };
 
   const onChangeUrl = (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setUrl(v);
-    setHash(method, v, body, headers);
+    if (debRef.current) window.clearTimeout(debRef.current);
+    debRef.current = window.setTimeout(() => {
+      saveUrlNow(v);
+      debRef.current = null;
+    }, 400);
   };
 
   const onSend = () => {
-    setHash(method, url, body, headers);
+    window.dispatchEvent(new CustomEvent('body:flush'));
+    saveUrlNow(url);
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('requestline:send'));
     }, 0);
   };
 
   const onUrlKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && isValidUrl(url))
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && isValidUrl(url)) {
       onSend();
+    }
   };
 
   const onShare = () => {

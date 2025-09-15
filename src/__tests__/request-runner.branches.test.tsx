@@ -1,21 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen, waitFor, act } from '@testing-library/react';
-import { renderWithI18n } from './test-utils';
-import RequestRunner from '@/components/RequestRunner';
-
-const enc = (s: string) =>
-  btoa(unescape(encodeURIComponent(s)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
+import { renderWithI18n, makeHash } from './test-utils';
+import RequestRunner from '@/widgets/RequestRunner/ui/RequestRunner';
 
 describe('RequestRunner branches', () => {
   it('renders plain text responses (non-JSON)', async () => {
-    const m = enc('GET');
-    const u = enc('https://api.example.com/text');
-    const b = enc('');
-    const h = enc(JSON.stringify([['Accept', 'text/plain']]));
-    window.location.hash = `m=${m}&u=${u}&b=${b}&h=${h}`;
+    window.location.hash = makeHash({
+      method: 'GET',
+      url: 'https://api.example.com/text',
+      headers: [{ k: 'Accept', v: 'text/plain' }],
+    });
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response('hello', {
@@ -65,11 +59,11 @@ describe('RequestRunner branches', () => {
       vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     }
 
-    const m = enc('GET');
-    const u = enc('https://api.example.com/bin');
-    const b = enc('');
-    const h = enc(JSON.stringify([['Accept', 'application/octet-stream']]));
-    window.location.hash = `m=${m}&u=${u}&b=${b}&h=${h}`;
+    window.location.hash = makeHash({
+      method: 'GET',
+      url: 'https://api.example.com/bin',
+      headers: [{ k: 'Accept', v: 'application/octet-stream' }],
+    });
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(new Uint8Array([1, 2, 3, 4]), {

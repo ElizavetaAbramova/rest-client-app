@@ -35,13 +35,7 @@ function CodeGenerator() {
     const request = new Request({
       url: url,
       method: method,
-      header: [
-        {
-          key: 'Content-Type',
-          value: 'application/json',
-        },
-        ...headers,
-      ],
+      header: headers,
       body: body,
     });
 

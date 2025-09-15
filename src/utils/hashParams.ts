@@ -4,15 +4,23 @@ export function readHash(): HashMap {
   const raw = window.location.hash.replace(/^#/, '');
   if (!raw) return {};
   return raw.split('&').reduce<HashMap>((acc, pair) => {
-    const [k, v] = pair.split('=');
-    if (k) acc[decodeURIComponent(k)] = v ? decodeURIComponent(v) : '';
+    if (!pair) return acc;
+    const idx = pair.indexOf('=');
+    if (idx === -1) {
+      const key = decodeURIComponent(pair);
+      acc[key] = '';
+    } else {
+      const key = decodeURIComponent(pair.slice(0, idx));
+      const val = pair.slice(idx + 1);
+      acc[key] = val;
+    }
     return acc;
   }, {});
 }
 
 export function writeHash(next: HashMap): void {
   const parts = Object.entries(next).map(
-    ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`
+    ([k, v]) => `${encodeURIComponent(k)}=${v}`
   );
   const hash = parts.join('&');
   if (hash !== window.location.hash.replace(/^#/, '')) {

@@ -1,33 +1,39 @@
-'use client'
+'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function LanguageSwitcher() {
-  const { i18n } = useTranslation()
-  const current = useMemo(() => (i18n.language?.startsWith('ru') ? 'ru' : 'en'), [i18n.language])
-  const btnRef = useRef<HTMLButtonElement | null>(null)
-  const [open, setOpen] = useState(false)
+  const { i18n } = useTranslation();
+  const current = useMemo(
+    () => (i18n.language?.startsWith('ru') ? 'ru' : 'en'),
+    [i18n.language]
+  );
+  const btnRef = useRef<HTMLButtonElement | null>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
-      if (!btnRef.current) return
-      if (e.target instanceof Node && !btnRef.current.parentElement?.contains(e.target)) {
-        setOpen(false)
+      if (!btnRef.current) return;
+      if (
+        e.target instanceof Node &&
+        !btnRef.current.parentElement?.contains(e.target)
+      ) {
+        setOpen(false);
       }
     }
-    document.addEventListener('click', onDocClick)
-    return () => document.removeEventListener('click', onDocClick)
-  }, [])
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, []);
 
   const options = [
     { code: 'en', label: 'EN' },
     { code: 'ru', label: 'RU' },
-  ]
+  ];
 
   function choose(code: string) {
-    if (!i18n.language?.startsWith(code)) i18n.changeLanguage(code)
-    setOpen(false)
+    if (!i18n.language?.startsWith(code)) i18n.changeLanguage(code);
+    setOpen(false);
   }
 
   return (
@@ -35,8 +41,8 @@ export default function LanguageSwitcher() {
       <button
         ref={btnRef}
         type="button"
-        onClick={() => setOpen(v => !v)}
-        className="btn btn-soft btn-primary rounded-sm px-3 hover:ring-2 hover:ring-sky-400 hover:shadow-lg hover:shadow-sky-400/30"
+        onClick={() => setOpen((v) => !v)}
+        className="btn btn-soft btn-primary rounded-sm px-3 hover:shadow-lg hover:ring-2 hover:shadow-sky-400/30 hover:ring-sky-400"
         aria-haspopup="listbox"
         aria-expanded={open}
         title={current.toUpperCase()}
@@ -47,9 +53,9 @@ export default function LanguageSwitcher() {
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 z-50 mt-2 w-24 overflow-y-auto max-h-48 rounded-sm border border-slate-700 bg-base-200 shadow-lg"
+          className="bg-base-200 absolute right-0 z-50 mt-2 max-h-48 w-24 overflow-y-auto rounded-sm border border-slate-700 shadow-lg"
         >
-          {options.map(opt => (
+          {options.map((opt) => (
             <button
               key={opt.code}
               role="option"
@@ -67,5 +73,5 @@ export default function LanguageSwitcher() {
         </div>
       )}
     </div>
-  )
+  );
 }
