@@ -54,7 +54,9 @@ export default function RequestLine() {
           console.error(e);
         }
       }
-    } catch {}
+    } catch (e){
+      console.error(e);
+    }
   }, []);
 
   useEffect(() => {
@@ -65,14 +67,20 @@ export default function RequestLine() {
         if (mEnc) {
           try {
             setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
-          } catch {}
+          } catch (e){
+            console.error(e);
+          }
         }
         if (uEnc) {
           try {
             setUrl(decodeBase64Url(uEnc));
-          } catch {}
+          } catch (e){
+            console.error(e);
+          }
         }
-      } catch {}
+      } catch (e){
+        console.error(e);
+      }
     };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
