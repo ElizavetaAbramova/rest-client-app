@@ -36,9 +36,6 @@ export default function Header() {
       </div>
       <div className="buttons-block flex w-full flex-wrap items-center justify-center gap-2 md:flex-nowrap md:justify-end md:gap-5">
         <LanguageSwitcher />
-        <Link href="/client" className="btn btn-soft btn-primary rounded-sm">
-          Client
-        </Link>
         {!user && (
           <>
             <Link
@@ -53,12 +50,26 @@ export default function Header() {
           </>
         )}
         {user && (
-          <button
-            onClick={handleSignOut}
-            className="btn btn-primary rounded-sm"
-          >
-            {t('sign_out')}
-          </button>
+          <>
+            <Link
+              href="/client"
+              className="btn btn-soft btn-primary rounded-sm"
+            >
+              {t('client')}
+            </Link>
+            <Link
+              href="/history"
+              className="btn btn-soft btn-primary rounded-sm"
+            >
+              {t('history')}
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="btn btn-primary rounded-sm"
+            >
+              {t('sign_out')}
+            </button>
+          </>
         )}
       </div>
     </header>

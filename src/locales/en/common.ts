@@ -102,6 +102,8 @@ const en = {
   header_value: 'Value',
   raw_request_body: 'Raw request body',
   code_generator_label: 'Code generator',
+  client: 'Client',
+  history: 'History',
 } as const;
 
 export default en;

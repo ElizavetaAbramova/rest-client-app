@@ -99,6 +99,8 @@ const ru = {
   header_value: 'Значение',
   raw_request_body: 'Сырой текст запроса',
   code_generator_label: 'Генератор кода',
+  client: 'Клиент',
+  history: 'История',
 } as const;
 
 export default ru;
