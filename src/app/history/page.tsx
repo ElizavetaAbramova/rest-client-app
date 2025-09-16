@@ -11,13 +11,23 @@ const History = dynamic(() => import('../../components/HistoryAnalytics'), {
 });
 
 export default function HistoryPage() {
-  const [user, setUser] = useState<null | { email: string }>(null);
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
-    onAuthStateChanged(auth, (u) =>
-      setUser(u ? { email: u.email || '' } : null)
-    );
+    onAuthStateChanged(auth, (user) => {
+      //TODO: delete console log
+      console.log(user?.uid);
+      setUserId(user ? user.uid : '');
+    });
   }, []);
 
-  return <div>{user && <History />}</div>;
+  return (
+    <div className="history-page bg-base-300 min-h-screen p-5 text-center">
+      {userId === '' ? (
+        <p>Login to see the history</p>
+      ) : (
+        <History userId={userId} />
+      )}
+    </div>
+  );
 }
