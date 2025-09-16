@@ -30,7 +30,15 @@ const isValidUrl = (s: string) => {
   return true;
 };
 
-export default function RequestLine() {
+export default function RequestLine({
+  onSendRequest,
+  setUrlProp,
+  setMethodProp,
+}: {
+  onSendRequest: () => void;
+  setUrlProp: (url: string) => void;
+  setMethodProp: (method: Method) => void;
+}) {
   const { t } = useT();
   const [method, setMethod] = useState<Method>('GET');
   const [url, setUrl] = useState('');
@@ -87,18 +95,21 @@ export default function RequestLine() {
   }, []);
 
   const onChangeMethod = (e: ChangeEvent<HTMLSelectElement>) => {
-    const v = e.target.value as Method;
-    setMethod(v);
-    setHashParam('m', enc(v));
+    const method = e.target.value as Method;
+    setMethod(method);
+    setHashParam('m', enc(method));
+    setMethodProp(method);
   };
 
-  const saveUrlNow = (v: string) => {
-    setHashParam('u', enc(v));
+  const saveUrlNow = (url: string) => {
+    setHashParam('u', enc(url));
+    setUrlProp(url);
   };
 
   const onChangeUrl = (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setUrl(v);
+    setUrlProp(v);
     if (debRef.current) window.clearTimeout(debRef.current);
     debRef.current = window.setTimeout(() => {
       saveUrlNow(v);
@@ -112,6 +123,7 @@ export default function RequestLine() {
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('requestline:send'));
     }, 0);
+    onSendRequest();
   };
 
   const onUrlKey = (e: KeyboardEvent<HTMLInputElement>) => {
