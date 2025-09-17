@@ -2,11 +2,23 @@
 import { useRequestRunner } from '@/hooks/useRequestRunner';
 import { useT } from '@/hooks/useT';
 import ResponsePanel from '@/components/ResponsePanel';
+import { useEffect } from 'react';
+import { RespData, RespError } from '@/entities/request/model/types';
 
-const RequestRunner = () => {
+const RequestRunner = ({
+  onResponse,
+}: {
+  onResponse: (response: RespData, error: RespError | null) => void;
+}) => {
   const { t } = useT();
   const { resp, err, showAll, setShowAll, stateWarn, urlTooLong } =
     useRequestRunner();
+
+  useEffect(() => {
+    if (resp) {
+      onResponse(resp, err);
+    }
+  }, [resp, onResponse]);
 
   return (
     <div className="mt-6 flex flex-col gap-3">

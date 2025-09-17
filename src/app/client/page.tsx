@@ -4,42 +4,88 @@ import HeadersEditor from '@/components/HeadersEditor';
 import Body from '@/components/Body';
 import RequestRunner from '@/widgets/RequestRunner/ui/RequestRunner';
 import CodeGenerator from '@/components/CodeGenerator';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Method } from '../../../types/Method';
+import { useUserId } from '@/hooks/useUserId';
 import { Row } from '../../../types/Row';
+import { getRawHash } from '@/utils/hashParams';
+import { RespData, RespError } from '@/entities/request/model/types';
+
+const saveInDb = (
+  user: string,
+  method: Method,
+  encodedUrl: string,
+  body: string,
+  headers: Row[],
+  requestSize: number,
+  resp: RespData,
+  url: string,
+  error: string | null = null
+) => {
+  fetch('/api/requests', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: user,
+      method,
+      url: encodedUrl,
+      request_body: body,
+      request_headers: headers,
+      request_size: requestSize,
+      response_size: resp.sizeBytes ?? 0,
+      status_code: resp.status,
+      duration_ms: resp.timeMs,
+      error: error,
+      api_url: url,
+    }),
+  });
+};
 
 export default function ClientPage() {
+  const user = useUserId().userId;
   const [method, setMethod] = useState<Method>('GET');
   const [url, setUrl] = useState('');
-  const [body /*, setBody*/] = useState('');
-  const [headers /*, setHeaders*/] = useState<Row[]>([{ key: '', value: '' }]);
+  const [body, setBody] = useState('');
+  const [requestSize, setRequestSize] = useState(0);
+  const [headers, setHeaders] = useState<Row[]>([{ key: '', value: '' }]);
+  const [resp, setResponse] = useState<RespData | null>(null);
+  const [error, setError] = useState<RespError | null>(null);
 
-  // const { url, method, body, headers } = useUrlRequestState();
-  const saveInDb = () => {
-    //save in history (request in data base)
-    console.log('save', method, url, body, headers);
-    // Request Duration (Latency) - duration_ms
-    // Response Status Code - status_code
-    // Request Timestamp - created_at
-    // Request Size - request_size
-    // Response Size - response_size
-    // Error Details - error
-    // user id
+  const handleResponse = (response: RespData, error: RespError | null) => {
+    setResponse(response);
+    if (error) {
+      setError(error);
+    }
   };
+
+  useEffect(() => {
+    if (!resp) return;
+    const encodedUrl = getRawHash();
+    //TODO delete log
+    console.log('save', url, method);
+
+    saveInDb(
+      user,
+      method,
+      encodedUrl,
+      body,
+      headers,
+      requestSize,
+      resp,
+      url,
+      error?.message
+    );
+  }, [resp]);
 
   return (
     <div className="bg-base-400 space-y-4 p-4">
-      <RequestLine
-        onSendRequest={() => saveInDb()}
-        setUrlProp={setUrl}
-        setMethodProp={setMethod}
-      />
-      <HeadersEditor />
+      <RequestLine setUrlProp={setUrl} setMethodProp={setMethod} />
+      <HeadersEditor setHeadersProp={setHeaders} />
       <div className="flex flex-wrap">
-        <Body />
+        <Body setBody={setBody} setRequestSize={setRequestSize} />
         <CodeGenerator />
       </div>
-      <RequestRunner />
+      <RequestRunner onResponse={handleResponse} />
     </div>
   );
 }

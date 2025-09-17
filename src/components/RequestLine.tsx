@@ -31,11 +31,9 @@ const isValidUrl = (s: string) => {
 };
 
 export default function RequestLine({
-  onSendRequest,
   setUrlProp,
   setMethodProp,
 }: {
-  onSendRequest: () => void;
   setUrlProp: (url: string) => void;
   setMethodProp: (method: Method) => void;
 }) {
@@ -51,6 +49,7 @@ export default function RequestLine({
       if (mEnc) {
         try {
           setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
+          setMethodProp(decodeBase64Url(mEnc).toUpperCase() as Method);
         } catch (e) {
           console.error(e);
         }
@@ -58,6 +57,7 @@ export default function RequestLine({
       if (uEnc) {
         try {
           setUrl(decodeBase64Url(uEnc));
+          setUrlProp(decodeBase64Url(uEnc));
         } catch (e) {
           console.error(e);
         }
@@ -65,33 +65,6 @@ export default function RequestLine({
     } catch (e) {
       console.error(e);
     }
-  }, []);
-
-  useEffect(() => {
-    const onHash = () => {
-      try {
-        const mEnc = getHashParam('m');
-        const uEnc = getHashParam('u');
-        if (mEnc) {
-          try {
-            setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        if (uEnc) {
-          try {
-            setUrl(decodeBase64Url(uEnc));
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
   const onChangeMethod = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -123,7 +96,6 @@ export default function RequestLine({
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('requestline:send'));
     }, 0);
-    onSendRequest();
   };
 
   const onUrlKey = (e: KeyboardEvent<HTMLInputElement>) => {

@@ -1,6 +1,7 @@
 'use client';
-import dynamic from 'next/dynamic';
+//TODO: delete use client
 
+import dynamic from 'next/dynamic';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { auth } from '@/lib/firebase';

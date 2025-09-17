@@ -2,6 +2,7 @@
 
 import { useT } from '@/hooks/useT';
 import Link from 'next/link';
+// import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
 
 function HistoryAnalytics({ userId }: { userId: string }) {
@@ -9,6 +10,13 @@ function HistoryAnalytics({ userId }: { userId: string }) {
   const [requestsHistory, setRequestsHistory] = useState([]);
   const [message, setMessage] = useState('');
   const { t } = useT();
+  // const [userId, setUserId] = useState<string>('');
+
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     setUserId(user ? user.uid : '');
+  //   });
+  // }, []);
 
   useEffect(() => {
     async function fetchHistory() {
