@@ -23,13 +23,13 @@ describe('Body', () => {
   it('restores from #b= after mount', async () => {
     const raw = '{"a":1}';
     window.location.hash = `b=${encodeB64Url(raw)}`;
-    render(<Body />);
+    render(<Body setBody={vi.fn()} setRequestSize={vi.fn()} />);
     const ta = await screen.findByPlaceholderText('Raw request body');
     expect((ta as HTMLTextAreaElement).value).toBe(raw);
   });
 
   it('writes to #b= on blur', async () => {
-    render(<Body />);
+    render(<Body setBody={vi.fn()} setRequestSize={vi.fn()} />);
     const ta = await screen.findByPlaceholderText('Raw request body');
     fireEvent.change(ta, { target: { value: '{"a":2}' } });
     fireEvent.blur(ta);
@@ -42,7 +42,7 @@ describe('Body', () => {
   });
 
   it('prettify formats json and keeps focus', async () => {
-    render(<Body />);
+    render(<Body setBody={vi.fn()} setRequestSize={vi.fn()} />);
     const ta = await screen.findByPlaceholderText('Raw request body');
     fireEvent.change(ta, { target: { value: '{"a":1}' } });
     const btn = screen.getByRole('button', { name: /Prettify/i });
@@ -52,7 +52,7 @@ describe('Body', () => {
   });
 
   it('disables prettify for non-json', async () => {
-    render(<Body />);
+    render(<Body setBody={vi.fn()} setRequestSize={vi.fn()} />);
     const ta = await screen.findByPlaceholderText('Raw request body');
     fireEvent.change(ta, { target: { value: 'hello' } });
     const btn = screen.getByRole('button', { name: /Prettify/i });
@@ -60,7 +60,7 @@ describe('Body', () => {
   });
 
   it('updates indicators', async () => {
-    render(<Body />);
+    render(<Body setBody={vi.fn()} setRequestSize={vi.fn()} />);
     const ta = await screen.findByPlaceholderText('Raw request body');
     fireEvent.change(ta, { target: { value: '{"a":1}' } });
     await waitFor(() => {

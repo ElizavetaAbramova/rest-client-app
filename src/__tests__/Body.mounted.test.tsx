@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Body from '@/components/Body';
 
@@ -14,7 +14,7 @@ describe('Body mounted guard', () => {
     const raw = '{"a":1}';
     window.location.hash = `b=${enc(raw)}`;
 
-    render(<Body />);
+    render(<Body setBody={vi.fn()} setRequestSize={vi.fn()} />);
 
     const ta = await screen.findByPlaceholderText('Raw request body');
     expect((ta as HTMLTextAreaElement).value).toBe(raw);

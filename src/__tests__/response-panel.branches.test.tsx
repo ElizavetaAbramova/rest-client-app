@@ -12,7 +12,7 @@ describe('RequestRunner more branches', () => {
 
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('boom'));
 
-    renderWithI18n(<RequestRunner />);
+    renderWithI18n(<RequestRunner onResponse={vi.fn()} />);
     await act(async () => {
       window.dispatchEvent(new CustomEvent('requestline:send'));
       window.dispatchEvent(new CustomEvent('request:send'));
@@ -51,7 +51,7 @@ describe('RequestRunner more branches', () => {
       new Response(null, { status: 204 })
     );
 
-    renderWithI18n(<RequestRunner />);
+    renderWithI18n(<RequestRunner onResponse={vi.fn()} />);
     await act(async () => {
       window.dispatchEvent(new CustomEvent('requestline:send'));
       window.dispatchEvent(new CustomEvent('request:send'));
@@ -80,7 +80,7 @@ describe('RequestRunner more branches', () => {
       })
     );
 
-    renderWithI18n(<RequestRunner />);
+    renderWithI18n(<RequestRunner onResponse={vi.fn()} />);
     await act(async () => {
       window.dispatchEvent(new CustomEvent('requestline:send'));
       window.dispatchEvent(new CustomEvent('request:send'));

@@ -5,7 +5,9 @@ import RequestLine from '@/components/RequestLine';
 
 describe('RequestLine', () => {
   it('enables Send for valid URL and dispatches send', async () => {
-    renderWithI18n(<RequestLine />);
+    renderWithI18n(
+      <RequestLine setUrlProp={vi.fn()} setMethodProp={vi.fn()} />
+    );
     const url = screen.getByPlaceholderText('https://example.com');
     const send = screen.getByRole('button', { name: /send/i });
     expect(send).toBeDisabled();
@@ -25,7 +27,9 @@ describe('RequestLine', () => {
   });
 
   it('hotkey Cmd/Ctrl+Enter triggers send and Share copies URL', async () => {
-    renderWithI18n(<RequestLine />);
+    renderWithI18n(
+      <RequestLine setUrlProp={vi.fn()} setMethodProp={vi.fn()} />
+    );
     const url = screen.getByPlaceholderText('https://example.com');
     fireEvent.change(url, { target: { value: 'https://example.com' } });
 
