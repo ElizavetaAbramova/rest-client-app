@@ -8,6 +8,7 @@ import { useT } from '@/hooks/useT';
 import { HistoryAnalyticsItem } from '../../../types/HistoryAnalyticsProps';
 import { useRouter } from 'next/navigation';
 import EmptyHistory from '@/components/EmptyHistory';
+import { fetchHistory } from '@/utils/fetchHistory';
 
 export default function HistoryPage() {
   const { t } = useT();
@@ -25,12 +26,10 @@ export default function HistoryPage() {
     `${t('response_size')} (${t('bytes')})`,
   ];
 
-  async function fetchHistory(id: string) {
+  async function requestHistory(id: string) {
     try {
-      const res = await fetch(`/api/requests/${id}`);
-      const data = await res.json();
-
-      setRequestsHistory(data.requests || []);
+      const data = await fetchHistory(id);
+      setRequestsHistory(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -41,7 +40,7 @@ export default function HistoryPage() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        fetchHistory(user.uid);
+        requestHistory(user.uid);
       }
     });
   }, []);
