@@ -7,7 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 
 const SKEW_MS = 3000;
 
-const PUBLIC_ROUTES = ['/auth/sign-in', '/auth-sign-up', '/404'];
+const PUBLIC_ROUTES = ['/auth/sign-in', '/auth/sign-up', '/404'];
 
 export function useAuthExpiryRedirect() {
   const router = useRouter();
