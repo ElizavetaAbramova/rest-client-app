@@ -30,9 +30,6 @@ export default function HistoryPage() {
       const res = await fetch(`/api/requests/${id}`);
       const data = await res.json();
 
-      //TODO delete log
-      console.log(data);
-
       setRequestsHistory(data.requests || []);
     } catch (err) {
       console.error(err);
@@ -43,9 +40,6 @@ export default function HistoryPage() {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      //TODO delete log
-      console.log(user?.uid);
-
       if (user) {
         fetchHistory(user.uid);
       }
