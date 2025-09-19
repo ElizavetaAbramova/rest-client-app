@@ -1,10 +1,9 @@
-import { NextApiRequest } from 'next';
 import pool from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  req: NextApiRequest,
-  { params }: { params: { userId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params;
 
