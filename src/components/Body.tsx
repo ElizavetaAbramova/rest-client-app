@@ -59,6 +59,7 @@ export default function Body({
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');
+
   const setHashParam = (key: string, raw: string) => {
     const q = new URLSearchParams(location.hash.replace(/^#/, ''));
     if (raw) q.set(key, enc(raw));
@@ -70,6 +71,7 @@ export default function Body({
     const q = new URLSearchParams(location.hash.replace(/^#/, ''));
     const h = q.get('h');
     let rows: Array<{ key: string; value: string }> = [];
+
     if (h) {
       try {
         rows = JSON.parse(decodeBase64Url(h)) as Array<{
@@ -80,6 +82,7 @@ export default function Body({
         rows = [];
       }
     }
+
     const hasCT = rows.some((r) => r.key.toLowerCase() === 'content-type');
     if (!hasCT) {
       rows = [...rows, { key: 'Content-Type', value: 'application/json' }];

@@ -1,6 +1,6 @@
 import { decodeBase64Url } from '@/utils/base64url';
 
-type HeaderRow = { k?: unknown; v?: unknown };
+type HeaderRow = { key?: unknown; value?: unknown };
 
 export function parseHeaders(h: string | undefined): Record<string, string> {
   if (!h) return {};
@@ -10,8 +10,8 @@ export function parseHeaders(h: string | undefined): Record<string, string> {
     if (Array.isArray(parsed)) {
       for (const r of parsed as unknown[]) {
         const row = r as HeaderRow;
-        const k = String(row.k ?? '').trim();
-        const v = String(row.v ?? '');
+        const k = String(row.key ?? '').trim();
+        const v = String(row.value ?? '');
         if (k) out[k] = v;
       }
     }
