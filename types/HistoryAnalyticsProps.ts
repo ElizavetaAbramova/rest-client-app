@@ -1,4 +1,3 @@
-import { RespError } from '@/entities/request/model/types';
 import { Row } from './Row';
 import { Method } from './Method';
 
@@ -6,7 +5,7 @@ export interface HistoryAnalyticsItem {
   api_url: string;
   created_at: Date;
   duration_ms: number;
-  error: RespError | null;
+  error: string | null;
   id: number;
   method: Method;
   request_body: string;

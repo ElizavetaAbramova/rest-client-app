@@ -18,7 +18,7 @@ const saveInDb = (
   body: string,
   headers: Row[],
   requestSize: number,
-  resp: RespData,
+  resp: RespData | null,
   url: string,
   error: string | null = null
 ) => {
@@ -32,9 +32,9 @@ const saveInDb = (
       request_body: body,
       request_headers: headers,
       request_size: requestSize,
-      response_size: resp.sizeBytes ?? 0,
-      status_code: resp.status,
-      duration_ms: resp.timeMs,
+      response_size: resp?.sizeBytes ?? 0,
+      status_code: resp?.status,
+      duration_ms: resp?.timeMs,
       error: error,
       api_url: url,
     }),
@@ -49,20 +49,20 @@ export default function ClientPage() {
   const [requestSize, setRequestSize] = useState(0);
   const [headers, setHeaders] = useState<Row[]>([{ key: '', value: '' }]);
   const [resp, setResponse] = useState<RespData | null>(null);
-  const [error, setError] = useState<RespError | null>(null);
+  const [errorDetails, setErrorDetails] = useState<RespError | null>(null);
 
-  const handleResponse = (response: RespData, error: RespError | null) => {
+  const handleResponse = (response: RespData) => {
+    setErrorDetails(null);
     setResponse(response);
-    if (error) {
-      setError(error);
-    }
+  };
+  const handleError = (error: RespError | null) => {
+    setResponse(null);
+    setErrorDetails(error);
   };
 
   useEffect(() => {
-    if (!resp) return;
+    if (!errorDetails && !resp) return;
     const encodedUrl = getRawHash();
-    //TODO delete log
-    console.log('save', url, method);
 
     saveInDb(
       user,
@@ -73,9 +73,9 @@ export default function ClientPage() {
       requestSize,
       resp,
       url,
-      error?.message
+      errorDetails?.message
     );
-  }, [resp]);
+  }, [resp, errorDetails]);
 
   return (
     <div className="bg-base-400 space-y-4 p-4">
@@ -85,7 +85,7 @@ export default function ClientPage() {
         <Body setBody={setBody} setRequestSize={setRequestSize} />
         <CodeGenerator />
       </div>
-      <RequestRunner onResponse={handleResponse} />
+      <RequestRunner onResponse={handleResponse} onError={handleError} />
     </div>
   );
 }

@@ -45,6 +45,9 @@ function HistoryAnalytics({
                 <td className="px-4 py-2 text-center">
                   {responseData.response_size}
                 </td>
+                <td className="px-4 py-2 text-center">
+                  {responseData.error ?? (responseData.error || 'N/a')}
+                </td>
               </tr>
             );
           })}

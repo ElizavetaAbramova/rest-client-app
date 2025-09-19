@@ -7,8 +7,10 @@ import { RespData, RespError } from '@/entities/request/model/types';
 
 const RequestRunner = ({
   onResponse,
+  onError,
 }: {
-  onResponse: (response: RespData, error: RespError | null) => void;
+  onResponse: (response: RespData) => void;
+  onError: (error: RespError | null) => void;
 }) => {
   const { t } = useT();
   const { resp, err, showAll, setShowAll, stateWarn, urlTooLong } =
@@ -16,9 +18,12 @@ const RequestRunner = ({
 
   useEffect(() => {
     if (resp) {
-      onResponse(resp, err);
+      onResponse(resp);
     }
-  }, [resp, onResponse]);
+    if (err) {
+      onError(err);
+    }
+  }, [resp, err, onResponse, onError]);
 
   return (
     <div className="mt-6 flex flex-col gap-3">

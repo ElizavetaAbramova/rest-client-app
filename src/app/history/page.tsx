@@ -24,6 +24,7 @@ export default function HistoryPage() {
     t('response_status'),
     `${t('response_time')} (${t('ms')})`,
     `${t('response_size')} (${t('bytes')})`,
+    t('error_details'),
   ];
 
   async function requestHistory(id: string) {
