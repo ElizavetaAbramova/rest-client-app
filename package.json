@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
-    "@types/pg": "^8.15.5",
     "firebase": "^12.2.1",
     "i18next": "^25.5.2",
     "i18next-browser-languagedetector": "^8.2.0",
@@ -40,6 +39,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
+    "@types/pg": "^8.15.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.0.2",
