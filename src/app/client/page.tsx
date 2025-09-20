@@ -1,5 +1,5 @@
-import AuthGate from '@/components/AuthGate';
+import ProtectedClient from './protected-client';
 
-export default function ProtectedClient() {
-  return <AuthGate load={() => import('./ClientApp')} />;
+export default function Page() {
+  return <ProtectedClient />;
 }
