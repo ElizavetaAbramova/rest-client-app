@@ -12,7 +12,7 @@ import {
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { auth } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PASSWORD_RE, mapAuthErr } from '@/constants/auth';
 import { useT } from '@/hooks/useT';
 
@@ -21,6 +21,8 @@ type FormData = { email: string; password: string };
 export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   const { t } = useT();
   const router = useRouter();
+  const sp = useSearchParams();
+  const redirectTo = sp.get('redirectTo') || '/';
   const [passwordHidden, setPasswordHidden] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
@@ -47,11 +49,11 @@ export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
-      if (u) router.replace('/');
+      if (u) router.replace(redirectTo);
       else setReady(true);
     });
     return () => unsub();
-  }, [router]);
+  }, [router, redirectTo]);
 
   const title = useMemo(
     () => (mode === 'sign-in' ? t('sign_in_title') : t('sign_up_title')),
@@ -76,7 +78,7 @@ export default function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
       } else {
         await createUserWithEmailAndPassword(auth, data.email, data.password);
       }
-      router.replace('/');
+      router.replace(redirectTo);
     } catch (err: unknown) {
       let code = 'auth/error';
       if (err instanceof FirebaseError) code = err.code;
