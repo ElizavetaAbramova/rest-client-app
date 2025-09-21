@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import AuthForm from '@/components/AuthForm';
+import AuthForm from '@/features/auth/ui/AuthForm';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Sign In | REST Client',
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <main className="flex min-h-dvh items-center justify-center p-6">
-      <AuthForm mode="sign-in" />
+      <Suspense fallback={<p>Loading...</p>}>
+        <AuthForm mode="sign-in" />
+      </Suspense>
     </main>
   );
 }

@@ -4,7 +4,9 @@ import Body from '@/components/Body';
 
 describe('Body extra', () => {
   it('dispatches requestline:send on hotkey', async () => {
-    render(<Body />);
+    const setBody = vi.fn();
+    const setRequestSize = vi.fn();
+    render(<Body setBody={setBody} setRequestSize={setRequestSize} />);
     const ta = await screen.findByPlaceholderText('Raw request body');
     const spy = vi.fn();
     window.addEventListener('requestline:send', spy);
@@ -14,7 +16,9 @@ describe('Body extra', () => {
   });
 
   it('shows validation error for invalid JSON', async () => {
-    render(<Body />);
+    const setBody = vi.fn();
+    const setRequestSize = vi.fn();
+    render(<Body setBody={setBody} setRequestSize={setRequestSize} />);
     const ta = await screen.findByPlaceholderText('Raw request body');
     fireEvent.change(ta, { target: { value: "{'a':1,}" } });
     const btn = screen.getByRole('button', { name: /prettify/i });

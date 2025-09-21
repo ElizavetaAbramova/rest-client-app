@@ -18,17 +18,11 @@ export function useUrlRequestState() {
       const headersDecoded = headersEnc
         ? JSON.parse(decodeBase64Url(headersEnc))
         : [];
-      const headersFormatted: Row[] = headersDecoded.map(
-        ({ k, v }: { k: string; v: string }) => ({
-          key: k,
-          value: v,
-        })
-      );
 
       setMethod(methodEnc ? decodeBase64Url(methodEnc).toUpperCase() : 'GET');
       setUrl(urlEnc ? decodeBase64Url(urlEnc) : '');
       setBody(bodyEnc ? decodeBase64Url(bodyEnc) : '');
-      setHeaders(headersFormatted);
+      setHeaders(headersDecoded);
     } catch {
       console.warn('Invalid URL state, ignored');
     }

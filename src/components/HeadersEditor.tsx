@@ -4,52 +4,67 @@ import { setHashParam } from '@/utils/urlState';
 import { decodeBase64Url } from '@/utils/base64url';
 import { getHashParam } from '@/utils/hashParams';
 import { useT } from '@/hooks/useT';
+import { Row } from '../../types/Row';
 
-type Row = { k: string; v: string };
-
-export default function HeadersEditor() {
+export default function HeadersEditor({
+  setHeadersProp,
+}: {
+  setHeadersProp: (headers: Row[]) => void;
+}) {
   const { t } = useT();
-  const [rows, setRows] = useState<Row[]>([{ k: '', v: '' }]);
+  const [rows, setRows] = useState<Row[]>([{ key: '', value: '' }]);
 
   useEffect(() => {
     const h = getHashParam('h');
     if (!h) return;
     try {
       const parsed = JSON.parse(decodeBase64Url(h)) as Row[];
-      if (Array.isArray(parsed) && parsed.length) setRows(parsed);
+      if (Array.isArray(parsed) && parsed.length) {
+        setRows(parsed);
+        setHeadersProp(parsed);
+      }
     } catch {
-      setRows([{ k: '', v: '' }]);
+      setRows([{ key: '', value: '' }]);
     }
   }, []);
 
-  const setK = (i: number, k: string) => {
-    setRows((r) => r.map((row, idx) => (idx === i ? { ...row, k } : row)));
+  const setKey = (i: number, key: string) => {
+    setRows((r) =>
+      r.map((row, idx) => (idx === i ? { ...row, key: key } : row))
+    );
   };
-  const setV = (i: number, v: string) => {
-    setRows((r) => r.map((row, idx) => (idx === i ? { ...row, v } : row)));
+
+  const setValue = (i: number, value: string) => {
+    setRows((r) => r.map((row, idx) => (idx === i ? { ...row, value } : row)));
   };
-  const addRow = () => setRows((r) => [...r, { k: '', v: '' }]);
+
+  const addRow = () => setRows((r) => [...r, { key: '', value: '' }]);
+
   const removeRow = (i: number) =>
     setRows((r) => r.filter((_, idx) => idx !== i));
+
   const apply = () => {
-    const sanitized = rows.filter((r) => r.k.trim() !== '');
+    const sanitized = rows.filter((r) => r.key.trim() !== '');
     setHashParam('h', JSON.stringify(sanitized));
+    setHeadersProp(sanitized);
   };
+
   const clearAll = () => {
-    setRows([{ k: '', v: '' }]);
+    setRows([{ key: '', value: '' }]);
     setHashParam('h', '');
   };
+
   const resetFromHash = () => {
     const h = getHashParam('h');
     if (!h) {
-      setRows([{ k: '', v: '' }]);
+      setRows([{ key: '', value: '' }]);
       return;
     }
     try {
       const parsed = JSON.parse(decodeBase64Url(h)) as Row[];
-      setRows(parsed.length ? parsed : [{ k: '', v: '' }]);
+      setRows(parsed.length ? parsed : [{ key: '', value: '' }]);
     } catch {
-      setRows([{ k: '', v: '' }]);
+      setRows([{ key: '', value: '' }]);
     }
   };
 
@@ -70,16 +85,16 @@ export default function HeadersEditor() {
                 <td className="align-top">
                   <input
                     className="input input-bordered input-sm w/full"
-                    value={row.k}
-                    onChange={(e) => setK(i, e.target.value)}
+                    value={row.key}
+                    onChange={(e) => setKey(i, e.target.value)}
                     placeholder="Content-Type"
                   />
                 </td>
                 <td className="align-top">
                   <input
                     className="input input-bordered input-sm w/full"
-                    value={row.v}
-                    onChange={(e) => setV(i, e.target.value)}
+                    value={row.value}
+                    onChange={(e) => setValue(i, e.target.value)}
                     placeholder="application/json"
                   />
                 </td>

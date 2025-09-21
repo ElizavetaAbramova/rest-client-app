@@ -19,7 +19,7 @@ describe('RequestRunner', () => {
       })
     );
 
-    renderWithI18n(<RequestRunner />);
+    renderWithI18n(<RequestRunner onResponse={vi.fn()} />);
 
     await act(async () => {
       window.dispatchEvent(new CustomEvent('requestline:send'));
