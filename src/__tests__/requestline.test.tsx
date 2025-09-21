@@ -4,45 +4,52 @@ import { renderWithI18n } from './test-utils';
 import RequestLine from '@/components/RequestLine';
 
 describe('RequestLine', () => {
+  const setup = () =>
+    renderWithI18n(
+      <RequestLine setUrlProp={vi.fn()} setMethodProp={vi.fn()} />
+    );
+
   it('enables Send for valid URL and dispatches send', async () => {
-    renderWithI18n(<RequestLine />);
-    const url = screen.getByPlaceholderText('https://example.com');
-    const send = screen.getByRole('button', { name: /send/i });
-    expect(send).toBeDisabled();
-    fireEvent.change(url, { target: { value: 'https://example.com' } });
-    expect(send).not.toBeDisabled();
+    setup();
 
-    const spy = vi.fn();
-    const handler = () => spy();
-    window.addEventListener('requestline:send', handler);
-    document.addEventListener('requestline:send', handler);
-    window.addEventListener('request:send', handler);
-    document.addEventListener('request:send', handler);
+    const urlInput = screen.getByPlaceholderText('https://example.com');
+    const sendButton = screen.getByRole('button', { name: /send/i });
+    const onSend = vi.fn();
+    window.addEventListener('requestline:send', onSend);
 
-    fireEvent.click(send);
+    expect(sendButton).toBeDisabled();
 
-    await waitFor(() => expect(spy).toHaveBeenCalled());
+    fireEvent.change(urlInput, { target: { value: 'https://example.com' } });
+
+    expect(sendButton).toBeEnabled();
+
+    fireEvent.click(sendButton);
+
+    await waitFor(() => expect(onSend).toHaveBeenCalled());
   });
 
-  it('hotkey Cmd/Ctrl+Enter triggers send and Share copies URL', async () => {
-    renderWithI18n(<RequestLine />);
-    const url = screen.getByPlaceholderText('https://example.com');
-    fireEvent.change(url, { target: { value: 'https://example.com' } });
+  it('hotkey Cmd/Ctrl+Enter triggers send', async () => {
+    setup();
+    const onSend = vi.fn();
+    window.addEventListener('requestline:send', onSend);
 
-    const spy = vi.fn();
-    const handler = () => spy();
-    window.addEventListener('requestline:send', handler);
-    document.addEventListener('requestline:send', handler);
-    window.addEventListener('request:send', handler);
-    document.addEventListener('request:send', handler);
+    const urlInput = screen.getByPlaceholderText('https://example.com');
+    fireEvent.change(urlInput, { target: { value: 'https://example.com' } });
 
-    fireEvent.keyDown(url, { key: 'Enter', metaKey: true });
+    fireEvent.keyDown(urlInput, { key: 'Enter', metaKey: true });
 
-    await waitFor(() => expect(spy).toHaveBeenCalled());
+    await waitFor(() => expect(onSend).toHaveBeenCalled());
+  });
+
+  it('click on Share copies URL', async () => {
+    setup();
 
     const writeText = vi.fn();
     Object.assign(navigator, { clipboard: { writeText } });
-    fireEvent.click(screen.getByRole('button', { name: /share/i }));
+
+    const shareButton = screen.getByRole('button', { name: /share/i });
+    fireEvent.click(shareButton);
+
     expect(writeText).toHaveBeenCalledWith(window.location.href);
   });
 });

@@ -18,9 +18,13 @@ export function readHash(): HashMap {
   }, {});
 }
 
+export function getRawHash(): string {
+  return window.location.hash.replace(/^#/, '');
+}
+
 export function writeHash(next: HashMap): void {
   const parts = Object.entries(next).map(
-    ([k, v]) => `${encodeURIComponent(k)}=${v}`
+    ([key, value]) => `${encodeURIComponent(key)}=${value}`
   );
   const hash = parts.join('&');
   if (hash !== window.location.hash.replace(/^#/, '')) {

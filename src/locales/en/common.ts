@@ -102,6 +102,16 @@ const en = {
   header_value: 'Value',
   raw_request_body: 'Raw request body',
   code_generator_label: 'Code generator',
+  client: 'Client',
+  history: 'History',
+  empty_history: 'History is empty',
+  loading_history: 'Loading history...',
+  request_time: 'Request Time',
+  endpoint: 'Endpoint',
+  ms: 'milliseconds',
+  error_details: 'Error details',
+  empty_history_text:
+    'Your request history is currently empty. Try submitting a request on the Client page and then come back to see it listed here. Once you send a request, this section will update automatically, so you can track everything in one place.',
 } as const;
 
 export default en;

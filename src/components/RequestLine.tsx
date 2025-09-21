@@ -30,7 +30,13 @@ const isValidUrl = (s: string) => {
   return true;
 };
 
-export default function RequestLine() {
+export default function RequestLine({
+  setUrlProp,
+  setMethodProp,
+}: {
+  setUrlProp: (url: string) => void;
+  setMethodProp: (method: Method) => void;
+}) {
   const { t } = useT();
   const [method, setMethod] = useState<Method>('GET');
   const [url, setUrl] = useState('');
@@ -43,6 +49,7 @@ export default function RequestLine() {
       if (mEnc) {
         try {
           setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
+          setMethodProp(decodeBase64Url(mEnc).toUpperCase() as Method);
         } catch (e) {
           console.error(e);
         }
@@ -50,6 +57,7 @@ export default function RequestLine() {
       if (uEnc) {
         try {
           setUrl(decodeBase64Url(uEnc));
+          setUrlProp(decodeBase64Url(uEnc));
         } catch (e) {
           console.error(e);
         }
@@ -59,46 +67,22 @@ export default function RequestLine() {
     }
   }, []);
 
-  useEffect(() => {
-    const onHash = () => {
-      try {
-        const mEnc = getHashParam('m');
-        const uEnc = getHashParam('u');
-        if (mEnc) {
-          try {
-            setMethod(decodeBase64Url(mEnc).toUpperCase() as Method);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        if (uEnc) {
-          try {
-            setUrl(decodeBase64Url(uEnc));
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-
   const onChangeMethod = (e: ChangeEvent<HTMLSelectElement>) => {
-    const v = e.target.value as Method;
-    setMethod(v);
-    setHashParam('m', enc(v));
+    const method = e.target.value as Method;
+    setMethod(method);
+    setHashParam('m', enc(method));
+    setMethodProp(method);
   };
 
-  const saveUrlNow = (v: string) => {
-    setHashParam('u', enc(v));
+  const saveUrlNow = (url: string) => {
+    setHashParam('u', enc(url));
+    setUrlProp(url);
   };
 
   const onChangeUrl = (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setUrl(v);
+    setUrlProp(v);
     if (debRef.current) window.clearTimeout(debRef.current);
     debRef.current = window.setTimeout(() => {
       saveUrlNow(v);

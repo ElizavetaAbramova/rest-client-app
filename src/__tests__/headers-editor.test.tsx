@@ -9,7 +9,7 @@ const { setHashParam } = await import('@/utils/urlState');
 describe('HeadersEditor', () => {
   it('adds, applies, clears, and resets headers', () => {
     window.location.hash = '';
-    renderWithI18n(<HeadersEditor />);
+    renderWithI18n(<HeadersEditor setHeadersProp={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: /add header/i }));
     const nameInputs = screen.getAllByPlaceholderText('Content-Type');
@@ -28,7 +28,7 @@ describe('HeadersEditor', () => {
 
     window.location.hash =
       'h=' +
-      btoa(JSON.stringify([{ k: 'A', v: 'B' }]))
+      btoa(JSON.stringify([{ key: 'A', value: 'B' }]))
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=+$/, '');

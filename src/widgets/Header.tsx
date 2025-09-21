@@ -3,13 +3,15 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useT } from '@/hooks/useT';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { isGatedRoute } from '@/utils/isGatedRoute';
 
 export default function Header() {
   const { t } = useT();
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<null | { email: string }>(null);
 
   useEffect(() => {
@@ -21,7 +23,9 @@ export default function Header() {
 
   async function handleSignOut() {
     await signOut(auth);
-    router.replace('/');
+    if (!isGatedRoute(pathname)) {
+      router.replace('/');
+    }
   }
 
   return (
@@ -36,9 +40,6 @@ export default function Header() {
       </div>
       <div className="buttons-block flex w-full flex-wrap items-center justify-center gap-2 md:flex-nowrap md:justify-end md:gap-5">
         <LanguageSwitcher />
-        <Link href="/client" className="btn btn-soft btn-primary rounded-sm">
-          Client
-        </Link>
         {!user && (
           <>
             <Link
@@ -53,12 +54,26 @@ export default function Header() {
           </>
         )}
         {user && (
-          <button
-            onClick={handleSignOut}
-            className="btn btn-primary rounded-sm"
-          >
-            {t('sign_out')}
-          </button>
+          <>
+            <Link
+              href="/client"
+              className="btn btn-soft btn-primary rounded-sm"
+            >
+              {t('client')}
+            </Link>
+            <Link
+              href="/history"
+              className="btn btn-soft btn-primary rounded-sm"
+            >
+              {t('history')}
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="btn btn-primary rounded-sm"
+            >
+              {t('sign_out')}
+            </button>
+          </>
         )}
       </div>
     </header>

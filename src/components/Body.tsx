@@ -28,7 +28,13 @@ function looksLikeJson(text: string): boolean {
   return first === '{' || first === '[';
 }
 
-export default function Body() {
+export default function Body({
+  setBody,
+  setRequestSize,
+}: {
+  setBody: (value: string) => void;
+  setRequestSize: (size: number) => void;
+}) {
   const { t } = useT();
   const [value, setValue] = useState<string>('');
   const [mounted, setMounted] = useState(false);
@@ -36,10 +42,13 @@ export default function Body() {
 
   useEffect(() => {
     setMounted(true);
-    const b = getHashParam('b');
-    if (!b) return;
+    const body = getHashParam('b');
+    if (!body) return;
     try {
-      setValue(decodeBase64Url(b));
+      const decodedBody = decodeBase64Url(body);
+      setValue(decodedBody);
+      setBody(decodedBody);
+      setRequestSize(bytesOf(decodedBody));
     } catch {
       setValue('');
     }
@@ -50,6 +59,7 @@ export default function Body() {
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');
+
   const setHashParam = (key: string, raw: string) => {
     const q = new URLSearchParams(location.hash.replace(/^#/, ''));
     if (raw) q.set(key, enc(raw));
@@ -60,20 +70,22 @@ export default function Body() {
   const ensureJsonContentType = () => {
     const q = new URLSearchParams(location.hash.replace(/^#/, ''));
     const h = q.get('h');
-    let rows: Array<{ k: string; v: string }> = [];
+    let rows: Array<{ key: string; value: string }> = [];
+
     if (h) {
       try {
         rows = JSON.parse(decodeBase64Url(h)) as Array<{
-          k: string;
-          v: string;
+          key: string;
+          value: string;
         }>;
       } catch {
         rows = [];
       }
     }
-    const hasCT = rows.some((r) => r.k.toLowerCase() === 'content-type');
+
+    const hasCT = rows.some((r) => r.key.toLowerCase() === 'content-type');
     if (!hasCT) {
-      rows = [...rows, { k: 'Content-Type', v: 'application/json' }];
+      rows = [...rows, { key: 'Content-Type', value: 'application/json' }];
       setHashParam('h', JSON.stringify(rows));
     }
   };
@@ -97,6 +109,8 @@ export default function Body() {
 
   const handleBlur = useCallback(() => {
     setHashParam('b', value);
+    setBody(value);
+    setRequestSize(bytesOf(value));
     if (looksLikeJson(value)) ensureJsonContentType();
   }, [value]);
 
