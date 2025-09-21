@@ -11,22 +11,7 @@ import { decodeBase64Url } from '@/utils/base64url';
 import { getHashParam } from '@/utils/hashParams';
 import '@/lib/i18n';
 import { useT } from '@/hooks/useT';
-
-function bytesOf(text: string): number {
-  return new Blob([text]).size;
-}
-
-function linesOf(text: string): number {
-  if (!text) return 0;
-  return text.split(/\r?\n/).length;
-}
-
-function looksLikeJson(text: string): boolean {
-  const t = text.trim();
-  if (!t) return false;
-  const first = t[0];
-  return first === '{' || first === '[';
-}
+import * as jsonUtils from '@/features/body/lib/jsonUtils';
 
 export default function Body({
   setBody,
@@ -36,7 +21,7 @@ export default function Body({
   setRequestSize: (size: number) => void;
 }) {
   const { t } = useT();
-  const [value, setValue] = useState<string>('');
+  const [value, setValue] = useState('');
   const [mounted, setMounted] = useState(false);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -45,62 +30,25 @@ export default function Body({
     const body = getHashParam('b');
     if (!body) return;
     try {
-      const decodedBody = decodeBase64Url(body);
-      setValue(decodedBody);
-      setBody(decodedBody);
-      setRequestSize(bytesOf(decodedBody));
+      const decoded = decodeBase64Url(body);
+      setValue(decoded);
+      setBody(decoded);
+      setRequestSize(jsonUtils.bytesOf(decoded));
     } catch {
       setValue('');
     }
   }, []);
 
-  const enc = (s: string) =>
-    btoa(unescape(encodeURIComponent(s)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-
-  const setHashParam = (key: string, raw: string) => {
-    const q = new URLSearchParams(location.hash.replace(/^#/, ''));
-    if (raw) q.set(key, enc(raw));
-    else q.delete(key);
-    location.hash = q.toString();
-  };
-
-  const ensureJsonContentType = () => {
-    const q = new URLSearchParams(location.hash.replace(/^#/, ''));
-    const h = q.get('h');
-    let rows: Array<{ key: string; value: string }> = [];
-
-    if (h) {
-      try {
-        rows = JSON.parse(decodeBase64Url(h)) as Array<{
-          key: string;
-          value: string;
-        }>;
-      } catch {
-        rows = [];
-      }
-    }
-
-    const hasCT = rows.some((r) => r.key.toLowerCase() === 'content-type');
-    if (!hasCT) {
-      rows = [...rows, { key: 'Content-Type', value: 'application/json' }];
-      setHashParam('h', JSON.stringify(rows));
-    }
-  };
-
-  const sizeBytes = useMemo(() => bytesOf(value), [value]);
-  const lineCount = useMemo(() => linesOf(value), [value]);
-  const canPrettify = useMemo(() => looksLikeJson(value), [value]);
+  const sizeBytes = useMemo(() => jsonUtils.bytesOf(value), [value]);
+  const lineCount = useMemo(() => jsonUtils.linesOf(value), [value]);
+  const canPrettify = useMemo(() => jsonUtils.looksLikeJson(value), [value]);
 
   const validationError = useMemo(() => {
     if (!mounted) return '';
-    const t = value.trim();
-    if (!t) return '';
-    if (!looksLikeJson(t)) return '';
+    const trimmed = value.trim();
+    if (!trimmed || !jsonUtils.looksLikeJson(trimmed)) return '';
     try {
-      JSON.parse(t);
+      JSON.parse(trimmed);
       return '';
     } catch {
       return 'Not valid JSON. Use only double quotes (") and no trailing commas/semicolon.';
@@ -108,17 +56,15 @@ export default function Body({
   }, [mounted, value]);
 
   const handleBlur = useCallback(() => {
-    setHashParam('b', value);
+    jsonUtils.setHashParam('b', value);
     setBody(value);
-    setRequestSize(bytesOf(value));
-    if (looksLikeJson(value)) ensureJsonContentType();
+    setRequestSize(jsonUtils.bytesOf(value));
+    if (jsonUtils.looksLikeJson(value)) jsonUtils.ensureJsonContentType();
   }, [value]);
 
   const handlePrettify = useCallback(() => {
     try {
-      const obj = JSON.parse(value);
-      const pretty = JSON.stringify(obj, null, 2);
-      setValue(pretty);
+      setValue(JSON.stringify(JSON.parse(value), null, 2));
       taRef.current?.focus();
     } catch {
       const hints: string[] = [];
@@ -127,7 +73,7 @@ export default function Body({
       if (/,(\s*[}\]])/.test(value))
         hints.push('Remove trailing comma before } or ].');
       if (/;\s*$/.test(value)) hints.push('Remove semicolon at the end.');
-      alert('Not valid JSON.\n' + (hints.length ? hints.join('\n') : ''));
+      alert('Not valid JSON.\n' + (hints.join('\n') || ''));
     }
   }, [value]);
 
@@ -146,7 +92,11 @@ export default function Body({
       <label className="text-sm font-medium">{t('body_label')}</label>
       <textarea
         ref={taRef}
-        className={`min-h-56 w-full rounded-xl border p-3 font-mono text-sm ${validationError ? 'border-red-500 focus:ring-2 focus:ring-red-400 focus:outline-none' : ''}`}
+        className={`min-h-56 w-full rounded-xl border p-3 font-mono text-sm ${
+          validationError
+            ? 'border-red-500 focus:ring-2 focus:ring-red-400 focus:outline-none'
+            : ''
+        }`}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={onKey}
