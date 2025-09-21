@@ -67,6 +67,9 @@ export default function Header() {
             >
               {t('history')}
             </Link>
+            <Link href="/vars" className="btn btn-soft btn-primary rounded-sm">
+              {t('variables')}
+            </Link>
             <button
               onClick={handleSignOut}
               className="btn btn-primary rounded-sm"

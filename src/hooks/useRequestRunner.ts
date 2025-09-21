@@ -3,6 +3,8 @@ import { decodeBase64Url } from '@/utils/base64url';
 import { RespData, RespError } from '@/entities/request/model/types';
 import { readHashState } from '@/entities/request/lib/readHashState';
 import { doRequest } from '@/features/RequestRunner/lib/doRequest';
+import { useVariables } from '@/hooks/useVariables';
+import { applyVariables } from '@/utils/replaceVariables';
 
 export function useRequestRunner() {
   const [resp, setResp] = useState<RespData | null>(null);
@@ -18,6 +20,8 @@ export function useRequestRunner() {
   const [ready, setReady] = useState(false);
   const [stateWarn, setStateWarn] = useState<string | null>(null);
   const [urlTooLong, setUrlTooLong] = useState(false);
+
+  const { variables } = useVariables();
 
   const applyHash = useCallback(() => {
     try {
@@ -59,20 +63,32 @@ export function useRequestRunner() {
     const ac = new AbortController();
     abortRef.current = ac;
 
-    const init: RequestInit = { method, signal: ac.signal, mode: 'cors' };
-    if (Object.keys(headersObj).length) {
-      init.headers = headersObj;
-    }
+    const finalUrl = applyVariables(url, variables) as string;
+
+    const finalHeaders = Object.keys(headersObj).length
+      ? (applyVariables(headersObj, variables) as Record<string, string>)
+      : undefined;
+
+    let finalBody: string | undefined;
     if (method !== 'GET' && method !== 'HEAD' && body) {
       try {
-        init.body = decodeBase64Url(body);
+        const raw = decodeBase64Url(body);
+        finalBody = applyVariables(raw, variables) as string;
       } catch {
-        init.body = body;
+        finalBody = applyVariables(body, variables) as string;
       }
     }
 
+    const init: RequestInit = {
+      method,
+      signal: ac.signal,
+      mode: 'cors',
+      headers: finalHeaders,
+      body: finalBody,
+    };
+
     try {
-      const res = await doRequest(url, init, showAll, ac);
+      const res = await doRequest(finalUrl, init, showAll, ac);
       setResp(res);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -94,7 +110,7 @@ export function useRequestRunner() {
     } finally {
       setBusy(false);
     }
-  }, [busy, canSend, url, method, headersObj, body, showAll]);
+  }, [busy, canSend, url, method, headersObj, body, showAll, variables]);
 
   useEffect(() => {
     const handler = () => {
