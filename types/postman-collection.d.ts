@@ -1,11 +1,18 @@
 declare module 'postman-collection' {
-  export class Request {
-    constructor(options: any);
-    url: any;
+  export interface RequestDefinition {
+    url: string;
     method: string;
-    headers: any;
-    body: any;
-    toJSON(): any;
+    header?: Header;
+    body?: string;
+    description?: string;
+  }
+  export class Request {
+    constructor(options: RequestDefinition);
+    url: string;
+    method: string;
+    headers: Header[];
+    body?: string;
+    toJSON(): RequestDefinition;
   }
 
   export class Collection {
@@ -13,13 +20,17 @@ declare module 'postman-collection' {
     items: any[];
     toJSON(): any;
   }
-
+  export interface ItemDefinition {
+    name?: string;
+    request?: Request;
+    response?: unknown[];
+  }
   export class Item {
-    constructor(options?: any);
+    constructor(options?: ItemDefinition);
     request: Request;
   }
 
   export class Header {
-    constructor(options: any);
+    constructor(options: string);
   }
 }
