@@ -112,6 +112,13 @@ const en = {
   error_details: 'Error details',
   empty_history_text:
     'Your request history is currently empty. Try submitting a request on the Client page and then come back to see it listed here. Once you send a request, this section will update automatically, so you can track everything in one place.',
+  loading_vars: 'Loading variables...',
+  variables: 'Variables',
+  no_variables: 'No variables defined yet',
+  variable_name: 'Variable name',
+  variable_value: 'Variable value',
+  add: 'Add',
+  delete: 'Delete',
 } as const;
 
 export default en;
