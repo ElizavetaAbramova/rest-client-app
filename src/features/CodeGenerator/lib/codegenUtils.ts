@@ -1,5 +1,5 @@
 import { BaseSyntheticEvent } from 'react';
-import { Request } from 'postman-collection';
+import { Header, Request } from 'postman-collection';
 import { convert, Options } from 'postman-code-generators';
 import type { Variant } from 'postman-code-generators';
 
@@ -24,7 +24,7 @@ export function copyToClipboard(
 export function generateSnippet(
   language: string,
   variant: string,
-  reqData: { url: string; method: string; headers: unknown; body: unknown },
+  reqData: { url: string; method: string; headers: Header; body: string },
   setError: (val: boolean) => void,
   setCode: (val: string) => void,
   setArray: (val: string[]) => void
