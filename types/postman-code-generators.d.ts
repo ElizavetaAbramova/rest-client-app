@@ -1,4 +1,5 @@
 declare module 'postman-code-generators' {
+  import { Request } from 'postman-collection';
   interface Options {
     indentCount?: number;
     indentType?: 'Space' | 'Tab';
@@ -23,7 +24,7 @@ declare module 'postman-code-generators' {
   export function convert(
     language: string,
     variant: string,
-    request: any,
+    request: Request,
     options: Options,
     callback: Callback
   ): void;
