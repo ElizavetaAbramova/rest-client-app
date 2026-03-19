@@ -1,17 +1,17 @@
 'use client';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { /*signOut,*/ onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { useRouter, usePathname } from 'next/navigation';
+// import { useRouter, usePathname } from 'next/navigation';
 import { useT } from '@/hooks/useT';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { isGatedRoute } from '@/utils/isGatedRoute';
+// import { isGatedRoute } from '@/utils/isGatedRoute';
 
 export default function Header() {
   const { t } = useT();
-  const router = useRouter();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const pathname = usePathname();
   const [user, setUser] = useState<null | { email: string }>(null);
 
   useEffect(() => {
@@ -21,12 +21,12 @@ export default function Header() {
     return () => unsub();
   }, []);
 
-  async function handleSignOut() {
-    await signOut(auth);
-    if (!isGatedRoute(pathname)) {
-      router.replace('/');
-    }
-  }
+  // async function handleSignOut() {
+  //   await signOut(auth);
+  //   if (!isGatedRoute(pathname)) {
+  //     router.replace('/');
+  //   }
+  // }
 
   return (
     <header className="text-neutral-content sticky top-0 z-2 flex flex-wrap items-center justify-center gap-3 bg-transparent p-3 backdrop-blur-md transition-colors duration-300 md:flex-nowrap md:justify-between">
@@ -40,7 +40,7 @@ export default function Header() {
       </div>
       <div className="buttons-block flex w-full flex-wrap items-center justify-center gap-2 md:flex-nowrap md:justify-end md:gap-5">
         <LanguageSwitcher />
-        {!user && (
+        {user && (
           <>
             <Link
               href="/auth/sign-in"
@@ -53,7 +53,7 @@ export default function Header() {
             </Link>
           </>
         )}
-        {user && (
+        {!user && (
           <>
             <Link
               href="/client"
@@ -70,12 +70,12 @@ export default function Header() {
             <Link href="/vars" className="btn btn-soft btn-primary rounded-sm">
               {t('variables')}
             </Link>
-            <button
+            {/* <button
               onClick={handleSignOut}
               className="btn btn-primary rounded-sm"
             >
               {t('sign_out')}
-            </button>
+            </button> */}
           </>
         )}
       </div>
