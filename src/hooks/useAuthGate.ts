@@ -20,8 +20,8 @@ export function useAuthGate(opts: AuthGateOptions = {}) {
         setUser(u);
         setStatus('authed');
       } else {
-        setUser(null);
-        setStatus('guest');
+        // setUser(null);
+        // setStatus('guest');
       }
     });
     return unsub;

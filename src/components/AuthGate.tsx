@@ -7,7 +7,7 @@ import type {
   LazyExoticComponent,
   PropsWithRef,
 } from 'react';
-import { /*useAuthGate, */ type AuthGateOptions } from '@/hooks/useAuthGate';
+import { useAuthGate, type AuthGateOptions } from '@/hooks/useAuthGate';
 
 type Props<P extends object = Record<string, unknown>> = {
   load: () => Promise<{ default: ComponentType<P> }>;
@@ -20,17 +20,19 @@ type Props<P extends object = Record<string, unknown>> = {
 export default function AuthGate<P extends object = Record<string, unknown>>({
   load,
   fallback = null,
-  // unauthorized = null,
-  // opts,
+  /*unauthorized = null,*/
+  opts,
   props,
 }: Props<P>) {
-  // const { status, authed } = useAuthGate(opts);
+  const { status, authed } = useAuthGate(opts);
 
   const LazyComp = useMemo<LazyExoticComponent<ComponentType<P>>>(
     () => lazy(load) as unknown as LazyExoticComponent<ComponentType<P>>,
     [load]
   );
 
+  console.log('AuthGate status:', status, 'authed:', authed);
+  //commenting out auth gate for now, as it prevents main functionality of the app
   // if (status === 'checking') return <>{fallback}</>;
   // if (!authed) return <>{unauthorized}</>;
 
